@@ -1,12 +1,12 @@
 package types
 
 type PlaceStore interface {
-	MakeEnvelope(box Bounds) ([]Marker, error)
-	SuggestPlacesByLocation(term string, lat float64, lng float64) ([]SearchResult, error)
-	GetPlaceListByLocation(box Bounds, page Pagination) (Page, error)
-	GetMetaByPlace(placeId int) (PlaceMeta, error)
-	GetInfoByPlace(placeId int) (PlaceInfo, error)
-	GetImagesByPlace(placeId int) ([]string, error)
+	GetMapMarkers(box Bounds) ([]Marker, error)
+	SearchForPlaces(term string, lat, lng float64) ([]SearchResult, error)
+	GetPlacesList(box Bounds, page Pagination) (Page, error)
+	GetMetaForPlace(placeId int) (PlaceMeta, error)
+	GetInfoForPlace(placeId int) (PlaceInfo, error)
+	GetImagesForPlace(placeId int) ([]string, error)
 }
 
 type GeoJSONPoint struct {

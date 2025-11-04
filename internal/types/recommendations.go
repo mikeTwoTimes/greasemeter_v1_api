@@ -1,7 +1,7 @@
 package types
 
 type RecommendationStore interface {
-	InsertRecommendation(placeId int, userId int, reason string) error
+	CreateRecommendation(data RecommendationPayload, userId int) error
 }
 
 type RecommendationPayload struct {

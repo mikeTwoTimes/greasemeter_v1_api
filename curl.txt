@@ -1,0 +1,147 @@
+# Users
+  # Register a new user request
+    curl -X POST https://api.greasemeter.live/v1/users/register \
+    -H "Content-Type: application/json" \
+    -d '{
+      "email": "test@example.com",
+      "password": "passwordpassword",
+      "name": "test123"
+    }' \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Register a new user response (204)
+    {
+      null
+    }
+
+  # Login a returning user request
+    curl -X POST https://api.greasemeter.live/v1/users/login \
+    -H "Content-Type: application/json" \
+    -d '{
+      "password": "passwordpassword",
+      "name": "gemstonecrab"
+    }' \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Login a returning user response (200)
+    {
+      "token": string
+    }
+
+  # Forgot password request
+    curl -X POST https://api.greasemeter.live/v1/users/forgot-password \
+    -H "Content-Type: application/json" \
+    -d '{
+      "email": "test@example.com"
+    }' \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Forgot password response (204)
+    {
+      null
+    }
+
+  # Delete user request
+    curl -X DELETE https://api.greasemeter.live/v1/users \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer (token goes here)" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Delete user response (204)
+    {
+      null
+    }
+
+# Places
+  # Map markers request
+    curl -X GET "https://api.greasemeter.live/v1/places/map?lat=float64&lng=float64&latDelta=float64&lngDelta=float64" \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Map markers response (200)
+    [
+      {
+        "id": int,
+        "point": geoJSONPoint
+      }
+    ]
+
+  # List view request
+    curl -X GET "https://api.greasemeter.live/v1/places/list?lat=float64&lng=float64&latDelta=float64&lngDelta=float64&page=int&limit=int" \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # List view response (200)
+    [
+      {
+	"id": int,
+	"name": string,
+	"address": string,
+	"rating": float32
+      }
+    ]
+
+  # Search request
+    curl -X GET "https://api.greasemeter.live/v1/places/search?term=string&lat=float64&lng=float64" \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Search response (200)
+    [
+      {
+	"id": int,
+	"name": string,
+	"address": string
+      }
+    ]
+
+  # Meta request
+    curl -X GET https://api.greasemeter.live/v1/places/{int}/meta \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Meta response (200)
+    {
+      "name": string,
+      "address": string,
+      "rating": float32
+    }
+
+  # Info request
+    curl -X GET https://api.greasemeter.live/v1/places/{int}/info \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Info response (200)
+    {
+      "rating": float32,
+      "images": [string]
+    }
+
+  # Images request
+    curl -X GET https://api.greasemeter.live/v1/places/{int}/images \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Images response (200)
+    {
+      "images": [string]
+    }
+
+# Reviews
+  # Reviews for place request
+    curl -X GET https://api.greasemeter.live/v1/reviews/places/{int}?page=int&limit=int \
+    -H "Content-Type: application/json" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Reviews for place response (200)
+    {
+      "data": [
+        "id": int
+	"name": string (represents username)
+	"rating": int
+	"text": string
+	"time": time
+      ],
+      "more": bool
+    }

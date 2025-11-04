@@ -3,14 +3,13 @@ package types
 import "time"
 
 type ReviewStore interface {
-	InsertReview(data ReviewPayload, userId int, placeId int) (Timestamp, error)
+	CreateReview(data ReviewPayload, userId, placeId int) (Timestamp, error)
 	GetReviewKeysAndRating(reviewId int) (ReviewRef, error)
-	GetReviewsByPlace(placeId int, page Pagination, query string) (Page, error)
-	GetReviewsByUser(userId int, page Pagination, query string) (Page, error)
-	UpdateReview(data ReviewPayload, reviewId int, placeId int, diff int) (Timestamp, error)
-	DeleteReview(reviewId int, placeId int, rating int) error
-	
-	getReviews(foreignId int, page Pagination, query string) (Page, error)
+	GetReviewsForPlace(placeId int, page Pagination) (Page, error)
+	GetReviewsForUser(userId int, page Pagination) (Page, error)
+	GetReviews(query string, foreignId int, page Pagination) (Page, error)
+	UpdateReview(data ReviewPayload, reviewId, placeId, diff int) (Timestamp, error)
+	DeleteReview(reviewId, placeId, rating int) error
 }
 
 type Review struct {
@@ -18,17 +17,17 @@ type Review struct {
     Name   string    `json:"name"`
 	Rating int       `json:"rating"`
 	Text   string    `json:"text"`
-	Date   time.Time `json:"date"`
+	Time   time.Time `json:"time"`
 }
 
 type Timestamp struct {
-	Id int       `json:"id,omitempty"`
-	T  time.Time `json:"timestamp"`
+	Id    int       `json:"id,omitempty"`
+	Time  time.Time `json:"time"`
 }
 
 type ReviewPayload struct {
-	Rating  int    `json:"rating"`
-	Text    string `json:"text"`
+	Rating int    `json:"rating"`
+	Text   string `json:"text"`
 }
 
 type ReviewRef struct {

@@ -1,9 +1,9 @@
 package types
 
 type BookmarkStore interface {
-	InsertBookmark(userId int, placeId int) error
-	GetUserByBookmark(bookmarkId int) (int, error)
-	GetBookmarksByUser(userId int) ([]Bookmark, error)
+	CreateBookmark(userId, placeId int) error
+	GetUserFromBookmark(bookmarkId int) (int, error)
+	GetBookmarksForUser(userId int) ([]Bookmark, error)
 	DeleteBookmark(bookmarkId int) error
 }
 

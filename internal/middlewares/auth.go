@@ -33,7 +33,7 @@ func Auth(jwtSecret string, exists func(int) (bool, error)) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			c.Abort()
 			return
-		} else if !exists {
+		} else if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 			c.Abort()
 			return

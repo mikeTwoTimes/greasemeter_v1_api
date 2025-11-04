@@ -1,12 +1,12 @@
 package bookmarks
 
 import (
-	"Greasemeter-rest-api/internal/types"
 	"context"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/types"
 )
 
 type Store struct {
@@ -17,7 +17,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 	return &Store{db: db}
 }
 
-func (s *Store) InsertBookmark(userId int, placeId int) error {
+func (s *Store) CreateBookmark(userId, placeId int) error {
     ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
     defer cancel()
 
@@ -30,7 +30,7 @@ func (s *Store) InsertBookmark(userId int, placeId int) error {
     return err
 }
 
-func (s *Store) GetUserByBookmark(id int) (int, error) {
+func (s *Store) GetUserFromBookmark(bookmarkId int) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
 
@@ -41,7 +41,7 @@ func (s *Store) GetUserByBookmark(id int) (int, error) {
     `
 
 	var userId int
-	err := s.db.QueryRow(ctx, query, id).Scan(&userId)
+	err := s.db.QueryRow(ctx, query, bookmarkId).Scan(&userId)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -54,7 +54,7 @@ func (s *Store) GetUserByBookmark(id int) (int, error) {
 	return userId, nil
 }
 
-func (s *Store) GetBookmarksByUser(userId int) ([]types.Bookmark, error) {
+func (s *Store) GetBookmarksForUser(userId int) ([]types.Bookmark, error) {
     ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
     defer cancel()
 
@@ -92,7 +92,7 @@ func (s *Store) GetBookmarksByUser(userId int) ([]types.Bookmark, error) {
             return nil, err
         }
 
-        bookmarks = append(bookmarks, &bookmark)
+        bookmarks = append(bookmarks, bookmark)
     }
 
     if err = rows.Err(); err != nil {
@@ -102,7 +102,7 @@ func (s *Store) GetBookmarksByUser(userId int) ([]types.Bookmark, error) {
     return bookmarks, nil
 }
 
-func (s *Store) DeleteBookmark(id int) error {
+func (s *Store) DeleteBookmark(bookmarkId int) error {
     ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
     defer cancel()
 
@@ -111,7 +111,7 @@ func (s *Store) DeleteBookmark(id int) error {
         WHERE id = $1
     `
 
-	_, err := s.db.Exec(ctx, query, id)
+	_, err := s.db.Exec(ctx, query, bookmarkId)
 
     return err
 }

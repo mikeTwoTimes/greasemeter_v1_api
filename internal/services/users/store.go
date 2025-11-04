@@ -1,12 +1,12 @@
 package users
 
 import (
-	"Greasemeter-rest-api/internal/types"
 	"context"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/types"
 )
 
 type Store struct {
@@ -17,7 +17,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 	return &Store{db: db}
 }
 
-func (s *Store) InsertUser(data types.RegisterPayload) error {
+func (s *Store) CreateUser(data types.RegisterPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
 
@@ -57,10 +57,10 @@ func (s *Store) GetUserCredentials(name string) (types.Credentials, error) {
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, nil
+			return types.Credentials{}, nil
 		}
 
-		return nil, err
+		return types.Credentials{}, err
 	}
 
 	return cred, nil
