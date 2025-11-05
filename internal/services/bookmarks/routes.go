@@ -20,6 +20,7 @@ func NewHandler(store types.BookmarkStore) *Handler {
 func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 	auth.POST("/bookmarks/places/:id", h.createBookmark)
 	auth.GET("/bookmarks", h.getBookmarksForUser)
+	auth.GET("/bookmarks/places/:id", h.isPlaceBookmarked)
 	auth.DELETE("/bookmarks/:id", h.deleteBookmark)
 }
 
@@ -47,6 +48,24 @@ func (h *Handler) getBookmarksForUser(c *gin.Context) {
 	if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
     } else {
+		c.JSON(http.StatusOK, resp)
+	}
+}
+
+func (h *Handler) isPlaceBookmarked(c *gin.Context) {
+	placeId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
+		return
+	}
+
+	userId := c.MustGet("userId").(int)
+	resp, err := h.store.IsPlaceBookmarked(userId, placeId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
 		c.JSON(http.StatusOK, resp)
 	}
 }

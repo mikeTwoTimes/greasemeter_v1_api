@@ -143,13 +143,7 @@ func (h *Handler) forgotPassword(c *gin.Context) {
 		return
 	}
 
-	err = h.mailer.SendPasswordReset(tokenString, email)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusNoContent, nil)
-	}
+	c.JSON(h.mailer.SendPasswordReset(tokenString, email))
 }
 
 func (h *Handler) resetPassword(c *gin.Context) {

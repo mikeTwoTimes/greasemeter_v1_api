@@ -102,6 +102,24 @@ func (s *Store) GetBookmarksForUser(userId int) ([]types.Bookmark, error) {
     return bookmarks, nil
 }
 
+func (s *Store) IsPlaceBookmarked(userId, placeId int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+    defer cancel()
+
+	query := `
+        SELECT EXISTS(
+            SELECT 1
+            FROM bookmarks
+            WHERE user_id = $1 AND place_id = $2
+        )
+    `
+
+	var exists bool
+	err := s.db.QueryRow(ctx, query, userId, placeId).Scan(&exists)
+
+    return exists, err
+}
+
 func (s *Store) DeleteBookmark(bookmarkId int) error {
     ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
     defer cancel()

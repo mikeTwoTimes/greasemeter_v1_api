@@ -2,7 +2,9 @@ package users
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -15,7 +17,7 @@ func NewMailer(client *sendgrid.Client) *Mailer {
 	return &Mailer{client: client}
 }
 
-func (m *Mailer) SendPasswordReset(token string, email string) error {
+func (m *Mailer) SendPasswordReset(token string, email string) (int, gin.H) {
     from := mail.NewEmail("GreaseMeter", "no-reply@api.greasemeter.live")
     subject := "Reset Your Password"
     to := mail.NewEmail("", email)
@@ -51,14 +53,12 @@ func (m *Mailer) SendPasswordReset(token string, email string) error {
 	response, err := m.client.Send(message)
 
 	if err != nil {
-        return fmt.Errorf("failed to send email: %w", err)
+        return http.StatusInternalServerError, gin.H{"error": err.Error()}
     } else if response.StatusCode >= 400 {
-        return fmt.Errorf(
-			"sendgrid error: %d - %s",
-			response.StatusCode,
-			response.Body,
-		)
-    }
+		return http.StatusInternalServerError, gin.H{
+			"error": "Something went wrong",
+		}
+	}
 
-    return nil
+    return http.StatusNoContent, nil
 }

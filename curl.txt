@@ -205,7 +205,7 @@
     {null}
 
 # Bookmarks
-  #  Create bookmark request
+  # Create bookmark request
     curl -X POST https://api.greasemeter.live/v1/bookmarks/places/{int} \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer (token goes here)" \
@@ -229,6 +229,15 @@
 	"address": string
       }
     ]
+
+# Is place bookmarked request
+    curl -X GET https://api.greasemeter.live/v1/bookmarks/places/{int} \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer (token goes here)" \
+    -w "\nHTTP Status: %{http_code}\n"
+
+  # Is place bookmarked response (200)
+    {bool}
 
   # Delete bookmark request
     curl -X DELETE https://api.greasemeter.live/v1/bookmarks/{int} \
