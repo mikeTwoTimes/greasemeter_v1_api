@@ -1,10 +1,13 @@
 package types
 
+import "time"
+
 type UserStore interface {
 	CreateUser(data RegisterPayload) error
+	CreateResetToken(userId int) (string, error)
 	GetUserCredentials(name string) (Credentials, error)
-	GetUserByEmail(email string) (int, error)
-	UserExists(userId int) (bool, error)
+	GetUserFromEmail(email string) (int, error)
+	GetDataFromResetToken(token string) (ResetTokenData, error)
 	UpdateUserPassword(userId int, password string) error
 	DeleteUser(userId int) error
 }
@@ -35,4 +38,9 @@ type ResetPasswordPayload struct {
 type Credentials struct {
 	Id       int 
 	Password string
+}
+
+type ResetTokenData struct {
+    UserId     int
+	Expiration time.Time
 }

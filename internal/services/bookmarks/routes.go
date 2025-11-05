@@ -19,7 +19,7 @@ func NewHandler(store types.BookmarkStore) *Handler {
 
 func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 	auth.POST("/bookmarks/places/:id", h.createBookmark)
-	auth.GET("/bookmarks/", h.getBookmarksForUser)
+	auth.GET("/bookmarks", h.getBookmarksForUser)
 	auth.DELETE("/bookmarks/:id", h.deleteBookmark)
 }
 
@@ -31,11 +31,9 @@ func (h *Handler) createBookmark(c *gin.Context) {
         return
     }
 
-    userId := utility.GetUserFromContext(c)
+    userId := c.MustGet("userId").(int)
 
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-	} else if err = h.store.CreateBookmark(userId, placeId); err != nil {
+	if err = h.store.CreateBookmark(userId, placeId); err != nil {
         c.JSON(utility.MapError(err))
     } else {
         c.JSON(http.StatusNoContent, nil)
@@ -43,13 +41,7 @@ func (h *Handler) createBookmark(c *gin.Context) {
 }
 
 func (h *Handler) getBookmarksForUser(c *gin.Context) {
-    userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-	
+    userId := c.MustGet("userId").(int)
     resp, err := h.store.GetBookmarksForUser(userId)
 
 	if err != nil {
@@ -67,13 +59,7 @@ func (h *Handler) deleteBookmark(c *gin.Context) {
         return
 	}
 
-	userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-	
+	userId := c.MustGet("userId").(int)
 	bookmarkUserId, err := h.store.GetUserFromBookmark(bookmarkId)
 
 	if err != nil {

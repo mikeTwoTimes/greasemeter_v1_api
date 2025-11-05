@@ -38,13 +38,7 @@ func (h *Handler) createReview(c *gin.Context) {
 		return
 	}
 
-	userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-	
+	userId := c.MustGet("userId").(int)
 	resp, err := h.store.CreateReview(req, placeId, userId)
 
 	if err != nil {
@@ -85,13 +79,7 @@ func (h *Handler) getReviewsForUser(c *gin.Context) {
         return
 	}
 
-	userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-
+	userId := c.MustGet("userId").(int)
     resp, err := h.store.GetReviewsForUser(userId, page)
 	
 	if err != nil {
@@ -113,13 +101,7 @@ func (h *Handler) updateReview(c *gin.Context) {
 		return
 	}
 
-	userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-
+	userId := c.MustGet("userId").(int)
 	ref, err := h.store.GetReviewKeysAndRating(reviewId)
 
 	if err != nil {
@@ -155,13 +137,7 @@ func (h *Handler) deleteReview(c *gin.Context) {
         return
     }
 
-    userId := utility.GetUserFromContext(c)
-
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-        return
-	}
-	
+    userId := c.MustGet("userId").(int)
 	ref, err := h.store.GetReviewKeysAndRating(reviewId)
 
 	if err != nil {

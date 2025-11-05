@@ -264,4 +264,3 @@ func (s *Store) DeleteReview(reviewId, placeId, rating int) error {
 
 	return nil
 }
-

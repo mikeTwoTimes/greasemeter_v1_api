@@ -28,11 +28,9 @@ func (h *Handler) createRecommendation(c *gin.Context) {
         return
     }
 
-	userId := utility.GetUserFromContext(c)
+	userId := c.MustGet("userId").(int)
 
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-	} else if err = h.store.CreateRecommendation(req, userId); err != nil {
+	if err = h.store.CreateRecommendation(req, userId); err != nil {
 		c.JSON(utility.MapError(err))
 	} else {
 		c.JSON(http.StatusNoContent, nil)

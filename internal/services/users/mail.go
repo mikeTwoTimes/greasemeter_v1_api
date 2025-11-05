@@ -7,18 +7,22 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
-type mailClient struct {
+type Mailer struct {
 	client *sendgrid.Client
 }
 
-func (m *mailClient) SendPasswordReset(token string, email string) error {
+func NewMailer(client *sendgrid.Client) *Mailer {
+	return &Mailer{client: client}
+}
+
+func (m *Mailer) SendPasswordReset(token string, email string) error {
     from := mail.NewEmail("GreaseMeter", "no-reply@api.greasemeter.live")
     subject := "Reset Your Password"
     to := mail.NewEmail("", email)
 
     resetLink := fmt.Sprintf(
 		"%s/reset-password/%s",
-		"https://www.greasemeter.live/v1/auth",
+		"https://www.greasemeter.live/v1/users",
 		token,
 	)
 

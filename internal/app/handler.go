@@ -43,11 +43,11 @@ func (a *App) handler() http.Handler {
 
 	v1 := g.Group("/v1")
 	auth := v1.Group("/")
+	auth.Use(middlewares.Auth(a.jwtSecret))
+
 	usersStore := users.NewStore(a.db)
-
-	auth.Use(middlewares.Auth(a.jwtSecret, usersStore.UserExists))
-
-	usersHandler := users.NewHandler(usersStore, a.jwtSecret, a.mailer)
+	mailer := users.NewMailer(a.mailer)
+	usersHandler := users.NewHandler(usersStore, a.jwtSecret, mailer)
 	usersHandler.RegisterRoutes(v1, auth)
 
 	placesStore := places.NewStore(a.db)

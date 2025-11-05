@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func Auth(jwtSecret string, exists func(int) (bool, error)) gin.HandlerFunc {
+func Auth(jwtSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, err := getClaimsFromHeader(c, jwtSecret)
 
@@ -23,18 +23,6 @@ func Auth(jwtSecret string, exists func(int) (bool, error)) gin.HandlerFunc {
 
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			c.Abort()
-			return
-		}
-
-		ok, err = exists(int(userId))
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			c.Abort()
-			return
-		} else if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 			c.Abort()
 			return
 		}

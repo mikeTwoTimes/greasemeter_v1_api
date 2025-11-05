@@ -18,7 +18,7 @@ func NewHandler(store types.ReportStore) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
-	auth.POST("/report/places/:id", h.createReport)
+	auth.POST("/reports/places/:id", h.createReport)
 }
 
 func (h *Handler) createReport(c *gin.Context) {
@@ -36,11 +36,9 @@ func (h *Handler) createReport(c *gin.Context) {
         return
 	}
 
-	userId := utility.GetUserFromContext(c)
+	userId := c.MustGet("userId").(int)
 
-	if userId == 0 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-	} else if err = h.store.CreateReport(placeId, userId, reason); err != nil {
+	if err = h.store.CreateReport(placeId, userId, reason); err != nil {
 		c.JSON(utility.MapError(err))
 	} else {
 		c.JSON(http.StatusNoContent, nil)

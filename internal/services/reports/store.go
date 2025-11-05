@@ -27,8 +27,8 @@ func (s *Store) CreateReport(placeId, userId int, reason string) error {
 	_, err := s.db.Exec(
 		ctx,
 		query,
-		placeId,
 		userId,
+		placeId,
 		reason,
 	)
 
