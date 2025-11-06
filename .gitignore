@@ -38,5 +38,6 @@ log.txt
 # Makefile
 Makefile
 
-# Test
+# Directories
 tests/
+docs/
