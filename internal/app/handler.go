@@ -13,6 +13,9 @@ import (
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/reports"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/reviews"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/users"
+	_ "github.com/mikeTwoTimes/greasemeter_v1_api/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (a *App) handler() http.Handler {
@@ -71,6 +74,17 @@ func (a *App) handler() http.Handler {
 	reportsStore := reports.NewStore(a.db)
 	reportsHandler := reports.NewHandler(reportsStore)
 	reportsHandler.RegisterRoutes(auth)
+
+	g.GET("/swagger/*any", func(c *gin.Context) {
+		if c.Request.RequestURI == "/swagger/" {
+			c.Redirect(302, "/swagger/index.html")
+		}
+
+		ginSwagger.WrapHandler(
+			swaggerFiles.Handler,
+			ginSwagger.URL("https://api.greasemeter.live/swagger/doc.json"),
+		)(c)
+	})
 	
 	return g
 }

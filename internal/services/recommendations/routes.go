@@ -20,6 +20,15 @@ func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 	auth.POST("/recommendations", h.createRecommendation)
 }
 
+// @Summary	    Creates a place recommendation
+// @Description	Creates a place recommendation given a valid access token
+// @Tags        recommendations
+// @Accept      json
+// @Produce     json
+// @Param       reccommendation body types.RecommendationPayload true "Recommendation"
+// @Success	    204
+// @Router      /v1/recommendations [post]
+// @Security    BearerAuth
 func (h *Handler) createRecommendation(c *gin.Context) {
 	req, err := utility.ParseRecommendation(c)
 

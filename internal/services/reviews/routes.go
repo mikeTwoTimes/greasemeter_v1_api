@@ -26,6 +26,16 @@ func (h *Handler) RegisterRoutes(v1, auth *gin.RouterGroup) {
 	auth.DELETE("/reviews/:id", h.deleteReview)
 }
 
+// @Summary	    Creates a review for a place
+// @Description	Creates a valid user's review for a place
+// @Tags        reviews
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Param       review body types.ReviewPayload true "Review"
+// @Success	    201 {object} types.Timestamp
+// @Router      /v1/reviews/places/{id} [post]
+// @Security    BearerAuth
 func (h *Handler) createReview(c *gin.Context) {
 	var req types.ReviewPayload
 	placeId, err := strconv.Atoi(c.Param("id"))
@@ -48,6 +58,14 @@ func (h *Handler) createReview(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets reviews for a place
+// @Description	Gets reviews for a place given a valid place ID
+// @Tags        reviews
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {object} types.ReviewPage
+// @Router      /v1/reviews/places/{id} [get]
 func (h *Handler) getReviewsForPlace(c *gin.Context) {
 	placeId, err := strconv.Atoi(c.Param("id"))
 	var page types.Pagination
@@ -71,6 +89,14 @@ func (h *Handler) getReviewsForPlace(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets user's reviews
+// @Description	Gets reviews for a user given a valid access token
+// @Tags        reviews
+// @Accept      json
+// @Produce     json
+// @Success	    200 {object} types.ReviewPage
+// @Router      /v1/reviews/ [get]
+// @Security    BearerAuth
 func (h *Handler) getReviewsForUser(c *gin.Context) {
 	page, err := utility.ParsePagination(c)
 
@@ -89,6 +115,15 @@ func (h *Handler) getReviewsForUser(c *gin.Context) {
 	}
 }
 
+// @Summary	    Updates a users review
+// @Description	Updates a users review given a valid access token
+// @Tags        reviews
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Review ID"
+// @Success	    200 {object} types.Timestamp
+// @Router      /v1/reviews/{id} [patch]
+// @Security    BearerAuth
 func (h *Handler) updateReview(c *gin.Context) {
 	var req types.ReviewPayload
 	reviewId, err := strconv.Atoi(c.Param("id"))
@@ -129,6 +164,15 @@ func (h *Handler) updateReview(c *gin.Context) {
 	}
 }
 
+// @Summary	    Deletes a users review
+// @Description	Deletes a users review given a valid access token
+// @Tags        reviews
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Review ID"
+// @Success	    204
+// @Router      /v1/reviews/{id} [delete]
+// @Security    BearerAuth
 func (h *Handler) deleteReview(c *gin.Context) {
     reviewId, err := strconv.Atoi(c.Param("id"))
 

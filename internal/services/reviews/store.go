@@ -66,14 +66,14 @@ func (s *Store) CreateReview(data types.ReviewPayload, placeId, userId int) (typ
 	return timestamp, nil
 }
 
-func (s *Store) GetReviews(query string, foreignId int, page types.Pagination) (types.Page, error) {
+func (s *Store) GetReviews(query string, foreignId int, page types.Pagination) (types.Page[types.Review], error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
 
 	rows, err := s.db.Query(ctx, query, foreignId, page.Limit, page.Offset)
 
 	if err != nil {
-		return types.Page{}, err
+		return types.Page[types.Review]{}, err
 	}
 
 	defer rows.Close()
@@ -90,22 +90,22 @@ func (s *Store) GetReviews(query string, foreignId int, page types.Pagination) (
 		)
 
 		if err != nil {
-			return types.Page{}, err
+			return types.Page[types.Review]{}, err
 		}
 
 		reviews = append(reviews, review)
 	}
 
 	if err = rows.Err(); err != nil {
-		return types.Page{}, err
+		return types.Page[types.Review]{}, err
 	} else if len(reviews) <= page.Limit {
-		return types.Page{
+		return types.Page[types.Review]{
 			Data: reviews,
 			More: false,
 		}, nil
 	}
 
-	return types.Page{
+	return types.Page[types.Review]{
 		Data: reviews[:page.Limit],
 		More: true,
 	}, nil
@@ -142,7 +142,7 @@ func (s *Store) GetReviewKeysAndRating(reviewId int) (types.ReviewRef, error) {
 	return refs, nil
 }
 
-func (s *Store) GetReviewsForPlace(placeId int, page types.Pagination) (types.Page, error) {
+func (s *Store) GetReviewsForPlace(placeId int, page types.Pagination) (types.Page[types.Review], error) {
 	query := `
         SELECT
             r.id,
@@ -160,7 +160,7 @@ func (s *Store) GetReviewsForPlace(placeId int, page types.Pagination) (types.Pa
 	 return s.GetReviews(query, placeId, page)
 }
 
-func (s *Store) GetReviewsForUser(userId int, page types.Pagination) (types.Page, error) {
+func (s *Store) GetReviewsForUser(userId int, page types.Pagination) (types.Page[types.Review], error) {
 	query := `
         SELECT
             r.id,

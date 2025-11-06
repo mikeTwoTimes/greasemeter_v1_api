@@ -3,7 +3,7 @@ package types
 type PlaceStore interface {
 	GetMapMarkers(box Bounds) ([]Marker, error)
 	SearchForPlaces(term string, lat, lng float64) ([]SearchResult, error)
-	GetPlacesList(box Bounds, page Pagination) (Page, error)
+	GetPlacesList(box Bounds, page Pagination) (Page[PlaceMeta], error)
 	GetMetaForPlace(placeId int) (PlaceMeta, error)
 	GetInfoForPlace(placeId int) (PlaceInfo, error)
 	GetImagesForPlace(placeId int) ([]string, error)
@@ -42,4 +42,9 @@ type Bounds struct {
 	LatMax float64
 	LngMin float64
 	LngMax float64
+}
+
+type MetaPage struct {
+	Data []PlaceMeta `json:"data"`
+	More bool        `json:"more"`
 }

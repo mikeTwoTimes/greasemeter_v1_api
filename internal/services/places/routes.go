@@ -27,6 +27,17 @@ func (h *Handler) RegisterRoutes(v1 *gin.RouterGroup) {
 	v1.GET("/places/:id/images", h.getImagesForPlace)
 }
 
+// @Summary	    Gets all map markers
+// @Description	Gets all map markers within a specified region
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       lat query float64 true "Latitude"
+// @Param       lng query float64 true "Longitude"
+// @Param       latDelta query float64 true "Latitude delta"
+// @Param       lngDelta query float64 true "Longitude delta"
+// @Success	    200 {object} []types.Marker	
+// @Router      /v1/places/map [get]
 func (h *Handler) getMapMarkers(c *gin.Context) {
 	box, err := utility.ParseBoundingBox(c)
 
@@ -44,6 +55,16 @@ func (h *Handler) getMapMarkers(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets search results for places
+// @Description	Gets search results given a search term, and point
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       term query string true "Search term"
+// @Param       lat query float64 true "Latitude"
+// @Param       lng query float64 true "Longitude"
+// @Success	    200 {object} []types.SearchResult
+// @Router      /v1/places/search [get]
 func (h *Handler) searchForPlaces(c *gin.Context) {
 	lat, lng, err := utility.ParseCoordinates(c)
 	term := c.Query("term")
@@ -67,6 +88,19 @@ func (h *Handler) searchForPlaces(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets list of places
+// @Description	Gets list of places within a specified region
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       lat query float64 true "Latitude"
+// @Param       lng query float64 true "Longitude"
+// @Param       latDelta query float64 true "Latitude delta"
+// @Param       lngDelta query float64 true "Longitude delta"
+// @Param       page query int true "Page number"
+// @Param       limit query int true "Page length"
+// @Success	    200 {object} types.MetaPage
+// @Router      /v1/places/list [get]
 func (h *Handler) getPlacesList(c *gin.Context) {
 	box, err := utility.ParseBoundingBox(c)
 
@@ -91,14 +125,38 @@ func (h *Handler) getPlacesList(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets metadata for a place
+// @Description	Gets metadata for a place given a valid place ID
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {object} types.PlaceMeta
+// @Router      /v1/places/{id}/meta [get]
 func (h *Handler) getMetaForPlace(c *gin.Context) {
 	getPlaceData(c, h.store.GetMetaForPlace)
 }
 
+// @Summary	    Gets info for a place
+// @Description	Gets info for a place given a valid place ID
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {object} types.PlaceInfo
+// @Router      /v1/places/{id}/info [get]
 func (h *Handler) getInfoForPlace(c *gin.Context) {
 	getPlaceData(c, h.store.GetInfoForPlace)
 }
 
+// @Summary	    Gets images for a place
+// @Description	Gets images for a place given a valid place ID
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {array} string
+// @Router      /v1/places/{id}/images [get]
 func (h *Handler) getImagesForPlace(c *gin.Context) {
 	getPlaceData(c, h.store.GetImagesForPlace)
 }

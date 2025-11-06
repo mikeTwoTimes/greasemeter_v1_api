@@ -34,13 +34,21 @@ func (h *Handler) RegisterRoutes(v1, auth *gin.RouterGroup) {
 	auth.DELETE("/users", h.deleteUser)
 }
 
+// @Summary	    Registers a new user
+// @Description	Registers a new user given unique credentials
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       user body types.RegisterPayload true "User"
+// @Success	    204	
+// @Router      /v1/users/register [post]
 func (h *Handler) createUser(c *gin.Context) {
 	req, err := utility.ParseRegister(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	} 
+	}
 	
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(req.Password),
@@ -63,6 +71,14 @@ func (h *Handler) createUser(c *gin.Context) {
 	}
 }
 
+// @Summary	    Signs in a returning user
+// @Description	Signs in a user given valid credentials
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       user body types.LoginPayload true "User"
+// @Success	    200 {object} types.Login
+// @Router      /v1/users/login [post]
 func (h *Handler) login(c *gin.Context) {
 	req, err := utility.ParseLogin(c)
 
@@ -114,6 +130,14 @@ func (h *Handler) login(c *gin.Context) {
 	}
 }
 
+// @Summary	    Sends a password reset email
+// @Description	Sends a password reset email to a verified address
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       email body types.ForgotPasswordPayload true "Email"
+// @Success	    204
+// @Router      /v1/users/forgot-password [post]
 func (h *Handler) forgotPassword(c *gin.Context) {
 	email, err := utility.ParseForgotPassword(c)
 
@@ -146,6 +170,14 @@ func (h *Handler) forgotPassword(c *gin.Context) {
 	c.JSON(h.mailer.SendPasswordReset(tokenString, email))
 }
 
+// @Summary	    Resets a user's password
+// @Description	Resets a user's password given a valid reset token
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       token path string true "Reset token"
+// @Success	    204
+// @Router      /v1/users/reset-password/{token} [post]
 func (h *Handler) resetPassword(c *gin.Context) {
 	data, err := h.store.GetDataFromResetToken(c.Param("token"))
 
@@ -181,6 +213,14 @@ func (h *Handler) resetPassword(c *gin.Context) {
 	}
 }
 
+// @Summary	    Deletes a user
+// @Description	Deletes a user given they have valid access token
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Success	    204
+// @Router      /v1/users [delete]
+// @Security    BearerAuth
 func (h *Handler) deleteUser(c *gin.Context) {
 	userId := c.MustGet("userId").(int)
 

@@ -1,0 +1,676 @@
+definitions:
+  types.Bookmark:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      placeId:
+        type: integer
+    type: object
+  types.ForgotPasswordPayload:
+    properties:
+      email:
+        type: string
+    type: object
+  types.GeoJSONPoint:
+    properties:
+      coordinates:
+        items:
+          type: number
+        type: array
+      type:
+        type: string
+    type: object
+  types.Login:
+    properties:
+      token:
+        type: string
+    type: object
+  types.LoginPayload:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  types.Marker:
+    properties:
+      id:
+        type: integer
+      point:
+        $ref: '#/definitions/types.GeoJSONPoint'
+    type: object
+  types.MetaPage:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.PlaceMeta'
+        type: array
+      more:
+        type: boolean
+    type: object
+  types.PlaceInfo:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+      rating:
+        type: number
+    type: object
+  types.PlaceMeta:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rating:
+        type: number
+    type: object
+  types.RecommendationPayload:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+    type: object
+  types.RegisterPayload:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  types.ReportPayload:
+    properties:
+      reason:
+        type: string
+    type: object
+  types.Review:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      rating:
+        type: integer
+      text:
+        type: string
+      time:
+        type: string
+    type: object
+  types.ReviewPage:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.Review'
+        type: array
+      more:
+        type: boolean
+    type: object
+  types.ReviewPayload:
+    properties:
+      rating:
+        type: integer
+      text:
+        type: string
+    type: object
+  types.SearchResult:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  types.Timestamp:
+    properties:
+      id:
+        type: integer
+      time:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: An API for GreaseMeter, the cheesesteak rating app
+  title: GreaseMeter's Monolithic Rest API
+  version: "1.0"
+paths:
+  /v1/bookmarks:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a users bookmark given a valid access token
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Deletes a users bookmark
+      tags:
+      - bookmarks
+    get:
+      consumes:
+      - application/json
+      description: Gets bookmarks for user given a valid access token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Bookmark'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Gets user's bookmarks
+      tags:
+      - bookmarks
+  /v1/bookmarks/place/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Creates a valid user's bookmark for a place
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Creates a bookmark for a place
+      tags:
+      - bookmarks
+  /v1/bookmarks/places/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets a user's bookmark status of a place
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      security:
+      - BearerAuth: []
+      summary: Gets user's bookmark for place
+      tags:
+      - bookmarks
+  /v1/places/{id}/images:
+    get:
+      consumes:
+      - application/json
+      description: Gets images for a place given a valid place ID
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Gets images for a place
+      tags:
+      - places
+  /v1/places/{id}/info:
+    get:
+      consumes:
+      - application/json
+      description: Gets info for a place given a valid place ID
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.PlaceInfo'
+      summary: Gets info for a place
+      tags:
+      - places
+  /v1/places/{id}/meta:
+    get:
+      consumes:
+      - application/json
+      description: Gets metadata for a place given a valid place ID
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.PlaceMeta'
+      summary: Gets metadata for a place
+      tags:
+      - places
+  /v1/places/list:
+    get:
+      consumes:
+      - application/json
+      description: Gets list of places within a specified region
+      parameters:
+      - description: Latitude
+        format: float64
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: Latitude delta
+        format: float64
+        in: query
+        name: latDelta
+        required: true
+        type: number
+      - description: Longitude delta
+        format: float64
+        in: query
+        name: lngDelta
+        required: true
+        type: number
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Page length
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.MetaPage'
+      summary: Gets list of places
+      tags:
+      - places
+  /v1/places/map:
+    get:
+      consumes:
+      - application/json
+      description: Gets all map markers within a specified region
+      parameters:
+      - description: Latitude
+        format: float64
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: Latitude delta
+        format: float64
+        in: query
+        name: latDelta
+        required: true
+        type: number
+      - description: Longitude delta
+        format: float64
+        in: query
+        name: lngDelta
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Marker'
+            type: array
+      summary: Gets all map markers
+      tags:
+      - places
+  /v1/places/search:
+    get:
+      consumes:
+      - application/json
+      description: Gets search results given a search term, and point
+      parameters:
+      - description: Search term
+        in: query
+        name: term
+        required: true
+        type: string
+      - description: Latitude
+        format: float64
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.SearchResult'
+            type: array
+      summary: Gets search results for places
+      tags:
+      - places
+  /v1/recommendations:
+    post:
+      consumes:
+      - application/json
+      description: Creates a place recommendation given a valid access token
+      parameters:
+      - description: Recommendation
+        in: body
+        name: reccommendation
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendationPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Creates a place recommendation
+      tags:
+      - recommendations
+  /v1/reports/place/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Creates a place report given a valid access token
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Report
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/types.ReportPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Creates a place report
+      tags:
+      - reports
+  /v1/reviews/:
+    get:
+      consumes:
+      - application/json
+      description: Gets reviews for a user given a valid access token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ReviewPage'
+      security:
+      - BearerAuth: []
+      summary: Gets user's reviews
+      tags:
+      - reviews
+  /v1/reviews/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a users review given a valid access token
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Deletes a users review
+      tags:
+      - reviews
+    patch:
+      consumes:
+      - application/json
+      description: Updates a users review given a valid access token
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Timestamp'
+      security:
+      - BearerAuth: []
+      summary: Updates a users review
+      tags:
+      - reviews
+  /v1/reviews/places/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets reviews for a place given a valid place ID
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ReviewPage'
+      summary: Gets reviews for a place
+      tags:
+      - reviews
+    post:
+      consumes:
+      - application/json
+      description: Creates a valid user's review for a place
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/types.ReviewPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.Timestamp'
+      security:
+      - BearerAuth: []
+      summary: Creates a review for a place
+      tags:
+      - reviews
+  /v1/users:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user given they have valid access token
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Deletes a user
+      tags:
+      - users
+  /v1/users/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Sends a password reset email to a verified address
+      parameters:
+      - description: Email
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/types.ForgotPasswordPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Sends a password reset email
+      tags:
+      - users
+  /v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Signs in a user given valid credentials
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Login'
+      summary: Signs in a returning user
+      tags:
+      - users
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user given unique credentials
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Registers a new user
+      tags:
+      - users
+  /v1/users/reset-password/{token}:
+    post:
+      consumes:
+      - application/json
+      description: Resets a user's password given a valid reset token
+      parameters:
+      - description: Reset token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Resets a user's password
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Enter your bearer token in the format **Bearer &lt;token&gt;**
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

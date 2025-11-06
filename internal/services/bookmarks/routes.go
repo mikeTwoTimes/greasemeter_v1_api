@@ -24,6 +24,15 @@ func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 	auth.DELETE("/bookmarks/:id", h.deleteBookmark)
 }
 
+// @Summary	    Creates a bookmark for a place
+// @Description	Creates a valid user's bookmark for a place
+// @Tags        bookmarks
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    204
+// @Router      /v1/bookmarks/place/{id} [post]
+// @Security    BearerAuth
 func (h *Handler) createBookmark(c *gin.Context) {
     placeId, err := strconv.Atoi(c.Param("id"))
 
@@ -41,6 +50,14 @@ func (h *Handler) createBookmark(c *gin.Context) {
     }
 }
 
+// @Summary	    Gets user's bookmarks
+// @Description	Gets bookmarks for user given a valid access token
+// @Tags        bookmarks
+// @Accept      json
+// @Produce     json
+// @Success	    200 {object} []types.Bookmark
+// @Router      /v1/bookmarks [get]
+// @Security    BearerAuth
 func (h *Handler) getBookmarksForUser(c *gin.Context) {
     userId := c.MustGet("userId").(int)
     resp, err := h.store.GetBookmarksForUser(userId)
@@ -52,6 +69,15 @@ func (h *Handler) getBookmarksForUser(c *gin.Context) {
 	}
 }
 
+// @Summary	    Gets user's bookmark for place
+// @Description	Gets a user's bookmark status of a place
+// @Tags        bookmarks
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 boolean result
+// @Router      /v1/bookmarks/places/{id} [get]
+// @Security    BearerAuth
 func (h *Handler) isPlaceBookmarked(c *gin.Context) {
 	placeId, err := strconv.Atoi(c.Param("id"))
 
@@ -70,6 +96,14 @@ func (h *Handler) isPlaceBookmarked(c *gin.Context) {
 	}
 }
 
+// @Summary	    Deletes a users bookmark
+// @Description	Deletes a users bookmark given a valid access token
+// @Tags        bookmarks
+// @Accept      json
+// @Produce     json
+// @Success	    204
+// @Router      /v1/bookmarks [delete]
+// @Security    BearerAuth
 func (h *Handler) deleteBookmark(c *gin.Context) {
     bookmarkId, err := strconv.Atoi(c.Param("id"))
 

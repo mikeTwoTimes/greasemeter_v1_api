@@ -111,7 +111,7 @@ func (s *Store) SearchForPlaces(term string, lat, lng float64) ([]types.SearchRe
 	return searchResults, nil
 }
 
-func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Page, error) {
+func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Page[types.PlaceMeta], error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
 
@@ -124,7 +124,7 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
             rating_count
         FROM places
         WHERE ST_WITHIN(point, ST_MakeEnvelope($1, $2, $3, $4, 4326))
-        ORDER BY ST_Distance(point, ST_MakePoint($1, $2)::geography)
+        ORDER BY rating_count DESC
         LIMIT $5 + 1 OFFSET ($6 - 1) * $5
     `
 
@@ -139,13 +139,14 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 		page.Offset,
 	)
 
+
 	if err != nil {
-		return types.Page{}, err
+		return types.Page[types.PlaceMeta]{}, err
 	}
 
 	defer rows.Close()
 	var list []types.PlaceMeta
-
+	
 	for rows.Next() {
 		var meta types.PlaceMeta
 		sum, count := 0, 0
@@ -158,7 +159,7 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 		)
 
 		if err != nil {
-			return types.Page{}, err
+			return types.Page[types.PlaceMeta]{}, err
 		} else if count == 0 {
 			meta.Rating = 0
 		} else {
@@ -169,15 +170,15 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 	}
 
 	if err = rows.Err(); err != nil {
-		return types.Page{}, err
+		return types.Page[types.PlaceMeta]{}, err
 	} else if len(list) <= page.Limit {
-		return types.Page{
+		return types.Page[types.PlaceMeta]{
 			Data: list,
 			More: false,
 		}, nil
 	}
 
-	return types.Page{
+	return types.Page[types.PlaceMeta]{
 		Data: list[:page.Limit],
 		More: true,
 	}, nil

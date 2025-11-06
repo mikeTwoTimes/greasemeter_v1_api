@@ -5,9 +5,9 @@ import "time"
 type ReviewStore interface {
 	CreateReview(data ReviewPayload, userId, placeId int) (Timestamp, error)
 	GetReviewKeysAndRating(reviewId int) (ReviewRef, error)
-	GetReviewsForPlace(placeId int, page Pagination) (Page, error)
-	GetReviewsForUser(userId int, page Pagination) (Page, error)
-	GetReviews(query string, foreignId int, page Pagination) (Page, error)
+	GetReviewsForPlace(placeId int, page Pagination) (Page[Review], error)
+	GetReviewsForUser(userId int, page Pagination) (Page[Review], error)
+	GetReviews(query string, foreignId int, page Pagination) (Page[Review], error)
 	UpdateReview(data ReviewPayload, reviewId, placeId, diff int) (Timestamp, error)
 	DeleteReview(reviewId, placeId, rating int) error
 }
@@ -34,4 +34,9 @@ type ReviewRef struct {
 	UserId  int
 	PlaceId int
 	Rating  int
+}
+
+type ReviewPage struct {
+	Data []Review `json:"data"`
+	More bool     `json:"more"`
 }

@@ -1,7 +1,7 @@
 package types
 
-type Page struct {
-	Data any  `json:"data"`
+type Page[T any] struct {
+	Data []T  `json:"data"`
 	More bool `json:"more"`
 }
 
