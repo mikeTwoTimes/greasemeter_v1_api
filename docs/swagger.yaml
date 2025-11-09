@@ -145,20 +145,6 @@ info:
   version: "1.0"
 paths:
   /v1/bookmarks:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a users bookmark given a valid access token
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - BearerAuth: []
-      summary: Deletes a users bookmark
-      tags:
-      - bookmarks
     get:
       consumes:
       - application/json
@@ -177,13 +163,13 @@ paths:
       summary: Gets user's bookmarks
       tags:
       - bookmarks
-  /v1/bookmarks/place/{id}:
-    post:
+  /v1/bookmarks/{id}:
+    delete:
       consumes:
       - application/json
-      description: Creates a valid user's bookmark for a place
+      description: Deletes a users bookmark given a valid access token
       parameters:
-      - description: Place ID
+      - description: Bookmark ID
         in: path
         name: id
         required: true
@@ -195,7 +181,7 @@ paths:
           description: No Content
       security:
       - BearerAuth: []
-      summary: Creates a bookmark for a place
+      summary: Deletes a users bookmark
       tags:
       - bookmarks
   /v1/bookmarks/places/{id}:
@@ -219,6 +205,26 @@ paths:
       security:
       - BearerAuth: []
       summary: Gets user's bookmark for place
+      tags:
+      - bookmarks
+    post:
+      consumes:
+      - application/json
+      description: Creates a valid user's bookmark for a place
+      parameters:
+      - description: Place ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Creates a bookmark for a place
       tags:
       - bookmarks
   /v1/places/{id}/images:
@@ -435,7 +441,7 @@ paths:
       summary: Creates a place recommendation
       tags:
       - recommendations
-  /v1/reports/place/{id}:
+  /v1/reports/places/{id}:
     post:
       consumes:
       - application/json
@@ -462,7 +468,7 @@ paths:
       summary: Creates a place report
       tags:
       - reports
-  /v1/reviews/:
+  /v1/reviews:
     get:
       consumes:
       - application/json
@@ -510,6 +516,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/types.ReviewPayload'
       produces:
       - application/json
       responses:

@@ -22,7 +22,7 @@ func ParsePagination(c *gin.Context) (types.Pagination, error) {
 
 	limit, err := strconv.Atoi(c.Query("limit"))
 
-	if err != nil || limit <= 0 {
+	if err != nil || limit <= 0 || limit > 20 {
         return types.Pagination{}, errors.New("Invalid limit")
 	}
 

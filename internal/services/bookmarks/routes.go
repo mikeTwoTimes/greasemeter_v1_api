@@ -31,7 +31,7 @@ func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 // @Produce     json
 // @Param       id path int true "Place ID"
 // @Success	    204
-// @Router      /v1/bookmarks/place/{id} [post]
+// @Router      /v1/bookmarks/places/{id} [post]
 // @Security    BearerAuth
 func (h *Handler) createBookmark(c *gin.Context) {
     placeId, err := strconv.Atoi(c.Param("id"))
@@ -101,8 +101,9 @@ func (h *Handler) isPlaceBookmarked(c *gin.Context) {
 // @Tags        bookmarks
 // @Accept      json
 // @Produce     json
+// @Param       id path int true "Bookmark ID"
 // @Success	    204
-// @Router      /v1/bookmarks [delete]
+// @Router      /v1/bookmarks/{id} [delete]
 // @Security    BearerAuth
 func (h *Handler) deleteBookmark(c *gin.Context) {
     bookmarkId, err := strconv.Atoi(c.Param("id"))

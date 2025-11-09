@@ -29,7 +29,7 @@ func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 // @Param       id path int true "Place ID"
 // @Param       report body types.ReportPayload true "Report"
 // @Success	    204
-// @Router      /v1/reports/place/{id} [post]
+// @Router      /v1/reports/places/{id} [post]
 // @Security    BearerAuth
 func (h *Handler) createReport(c *gin.Context) {
 	placeId, err := strconv.Atoi(c.Param("id"))

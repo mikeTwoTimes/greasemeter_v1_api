@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	_ "github.com/mikeTwoTimes/greasemeter_v1_api/docs"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/middlewares"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/bookmarks"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/places"
@@ -13,7 +14,6 @@ import (
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/reports"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/reviews"
 	"github.com/mikeTwoTimes/greasemeter_v1_api/internal/services/users"
-	_ "github.com/mikeTwoTimes/greasemeter_v1_api/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -45,6 +45,7 @@ func (a *App) handler() http.Handler {
 	g.Use(cors.New(config))
 
 	v1 := g.Group("/v1")
+	v1.Use(middlewares.Limit(middlewares.NewLimiter(60, time.Minute)))
 	auth := v1.Group("/")
 	auth.Use(middlewares.Auth(a.jwtSecret))
 

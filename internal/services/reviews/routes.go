@@ -95,7 +95,7 @@ func (h *Handler) getReviewsForPlace(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Success	    200 {object} types.ReviewPage
-// @Router      /v1/reviews/ [get]
+// @Router      /v1/reviews [get]
 // @Security    BearerAuth
 func (h *Handler) getReviewsForUser(c *gin.Context) {
 	page, err := utility.ParsePagination(c)
@@ -121,6 +121,7 @@ func (h *Handler) getReviewsForUser(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id path int true "Review ID"
+// @Param       review body types.ReviewPayload true "Review"
 // @Success	    200 {object} types.Timestamp
 // @Router      /v1/reviews/{id} [patch]
 // @Security    BearerAuth
