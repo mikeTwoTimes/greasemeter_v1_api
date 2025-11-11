@@ -154,6 +154,10 @@ func ParseResetPassword(c *gin.Context) (string, error) {
 
 	if err != nil {
 		return "", errors.New("Failed to bind password")
+	} else if len(req.Password) < 12 || len(req.Password) > 255 {
+		return "", errors.New(
+			"Passwords must be between 12 and 255 characters",
+		)
 	} else if !validASCII.MatchString(req.Password) {
 		return "", errors.New("Password contains illegal character")
 	}

@@ -163,10 +163,9 @@ func (h *Handler) forgotPassword(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	} else {
+		c.JSON(h.mailer.SendPasswordReset(tokenString, email))
 	}
-
-	c.JSON(h.mailer.SendPasswordReset(tokenString, email))
 }
 
 // @Summary	    Resets a user's password
@@ -183,11 +182,8 @@ func (h *Handler) resetPassword(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
-	} else if data.UserId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token"})
-		return
-	} else if data.Expiration.Before(time.Now()) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
+	} else if data.UserId == 0 || data.Expiration.Before(time.Now()) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	} 
 	
@@ -202,6 +198,13 @@ func (h *Handler) resetPassword(c *gin.Context) {
 		[]byte(password),
 		bcrypt.DefaultCost,
 	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
 
 	err = h.store.UpdateUserPassword(data.UserId, string(hashedPassword))
 
