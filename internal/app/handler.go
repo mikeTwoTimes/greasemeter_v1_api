@@ -22,7 +22,7 @@ func (a *App) handler() http.Handler {
 	g := gin.Default()
 
 	config := cors.Config{
-		AllowOrigins:     []string{"https://api.greasemeter.live"},
+		AllowOrigins:     []string{"https://www.greasemeter.live"},
 		AllowMethods:     []string{
 			"GET",
 			"POST",

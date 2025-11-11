@@ -62,7 +62,7 @@ func getClaimsFromHeader(c *gin.Context, jwtSecret string) (jwt.MapClaims, error
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
-	if !ok || claims["type"] != "auth" {
+	if !ok {
 		return jwt.MapClaims{}, errors.New("Invalid token")
 	}
 

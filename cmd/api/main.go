@@ -15,7 +15,6 @@ import (
 // @in header
 // @name Authorization
 // @description Enter your bearer token in the format **Bearer &lt;token&gt;**
-
 func main() {
 	a, err := app.NewApp(
 		os.Getenv("PORT"),

@@ -116,7 +116,6 @@ func (h *Handler) login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": existingUser.Id,
 		"exp":    time.Now().Add(time.Hour * 72).Unix(),
-		"type":   "auth",
 	})
 
 	tokenString, err := token.SignedString([]byte(h.jwtSecret))
