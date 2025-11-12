@@ -9,8 +9,8 @@ type BookmarkStore interface {
 }
 
 type Bookmark struct {
-	Id      int     `json:"id"`
-	PlaceId int     `json:"placeId"`
-	Name    string  `json:"name"`
-	Address string  `json:"address"`
+	Id      int    `json:"id"`
+	PlaceId int    `json:"placeId"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }

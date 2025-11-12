@@ -16,7 +16,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) CreateReport(placeId, userId int, reason string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `

@@ -14,15 +14,15 @@ type ReviewStore interface {
 
 type Review struct {
 	Id     int       `json:"id"`
-    Name   string    `json:"name"`
+	Name   string    `json:"name"`
 	Rating int       `json:"rating"`
 	Text   string    `json:"text"`
 	Time   time.Time `json:"time"`
 }
 
 type Timestamp struct {
-	Id    int       `json:"id,omitempty"`
-	Time  time.Time `json:"time"`
+	Id   int       `json:"id,omitempty"`
+	Time time.Time `json:"time"`
 }
 
 type ReviewPayload struct {

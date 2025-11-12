@@ -18,17 +18,17 @@ func NewMailer(client *sendgrid.Client) *Mailer {
 }
 
 func (m *Mailer) SendPasswordReset(token string, email string) (int, gin.H) {
-    from := mail.NewEmail("GreaseMeter", "no-reply@api.greasemeter.live")
-    subject := "Reset Your Password"
-    to := mail.NewEmail("", email)
+	from := mail.NewEmail("GreaseMeter", "no-reply@api.greasemeter.live")
+	subject := "Reset Your Password"
+	to := mail.NewEmail("", email)
 
-    resetLink := fmt.Sprintf(
+	resetLink := fmt.Sprintf(
 		"%s/reset-password/%s",
 		"https://www.greasemeter.live/v1/users",
 		token,
 	)
 
-    plainTextContent := fmt.Sprintf(
+	plainTextContent := fmt.Sprintf(
 		"Click the following link to reset your password: %s",
 		resetLink,
 	)
@@ -42,7 +42,7 @@ func (m *Mailer) SendPasswordReset(token string, email string) (int, gin.H) {
 		resetLink,
 	)
 
-    message := mail.NewSingleEmail(
+	message := mail.NewSingleEmail(
 		from,
 		subject,
 		to,
@@ -53,12 +53,12 @@ func (m *Mailer) SendPasswordReset(token string, email string) (int, gin.H) {
 	response, err := m.client.Send(message)
 
 	if err != nil {
-        return http.StatusInternalServerError, gin.H{"error": err.Error()}
-    } else if response.StatusCode >= 400 {
+		return http.StatusInternalServerError, gin.H{"error": err.Error()}
+	} else if response.StatusCode >= 400 {
 		return http.StatusInternalServerError, gin.H{
 			"error": "Something went wrong",
 		}
 	}
 
-    return http.StatusNoContent, nil
+	return http.StatusNoContent, nil
 }

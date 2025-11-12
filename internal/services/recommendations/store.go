@@ -17,14 +17,14 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) CreateRecommendation(data types.RecommendationPayload, userId int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
         INSERT INTO recommendations (user_id, name, address)
         VALUES ($1, $2, $3)
     `
-	
+
 	_, err := s.db.Exec(
 		ctx,
 		query,

@@ -21,7 +21,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) CreateUser(data types.RegisterPayload) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -41,7 +41,7 @@ func (s *Store) CreateUser(data types.RegisterPayload) error {
 }
 
 func (s *Store) CreateResetToken(userId int) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	b := make([]byte, 16)
@@ -77,7 +77,7 @@ func (s *Store) CreateResetToken(userId int) (string, error) {
 }
 
 func (s *Store) GetUserCredentials(name string) (types.Credentials, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -106,7 +106,7 @@ func (s *Store) GetUserCredentials(name string) (types.Credentials, error) {
 }
 
 func (s *Store) GetUserFromEmail(email string) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -130,7 +130,7 @@ func (s *Store) GetUserFromEmail(email string) (int, error) {
 }
 
 func (s *Store) GetDataFromResetToken(token string) (types.ResetTokenData, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -159,7 +159,7 @@ func (s *Store) GetDataFromResetToken(token string) (types.ResetTokenData, error
 }
 
 func (s *Store) UpdateUserPassword(userId int, password string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	tx, err := s.db.Begin(ctx)
 	defer cancel()
 
@@ -198,8 +198,8 @@ func (s *Store) UpdateUserPassword(userId int, password string) error {
 }
 
 func (s *Store) DeleteUser(userId int) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	query := `
         DELETE FROM users

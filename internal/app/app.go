@@ -28,13 +28,13 @@ func NewApp(addr, dbConn, secret, sgKey string) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	pool, err := pgxpool.New(context.Background(), dbConn)
 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &App{
 		port:      port,
 		db:        pool,
@@ -53,25 +53,25 @@ func (a *App) Serve() error {
 	}
 
 	stop := make(chan os.Signal, 1)
-    signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(stop)
 
-    go func() {
-        if err := server.ListenAndServe(); err != nil &&
+	go func() {
+		if err := server.ListenAndServe(); err != nil &&
 			err != http.ErrServerClosed {
-            log.Fatalf("could not listen: %v\n", err)
-        }
-    }()
+			log.Fatalf("could not listen: %v\n", err)
+		}
+	}()
 
-    <-stop
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	<-stop
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-    if err := server.Shutdown(ctx); err != nil {
-        return fmt.Errorf("server shutdown failed: %w", err)
-    }
+	if err := server.Shutdown(ctx); err != nil {
+		return fmt.Errorf("server shutdown failed: %w", err)
+	}
 
 	a.db.Close()
 
-    return nil
+	return nil
 }

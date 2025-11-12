@@ -75,7 +75,7 @@ func (h *Handler) getReviewsForPlace(c *gin.Context) {
 		return
 	} else if page, err = utility.ParsePagination(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		return
 	}
 
 	resp, err := h.store.GetReviewsForPlace(placeId, page)
@@ -102,15 +102,15 @@ func (h *Handler) getReviewsForUser(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		return
 	}
 
 	userId := c.MustGet("userId").(int)
-    resp, err := h.store.GetReviewsForUser(userId, page)
-	
+	resp, err := h.store.GetReviewsForUser(userId, page)
+
 	if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
 		c.JSON(http.StatusOK, resp)
 	}
 }
@@ -175,14 +175,14 @@ func (h *Handler) updateReview(c *gin.Context) {
 // @Router      /v1/reviews/{id} [delete]
 // @Security    BearerAuth
 func (h *Handler) deleteReview(c *gin.Context) {
-    reviewId, err := strconv.Atoi(c.Param("id"))
+	reviewId, err := strconv.Atoi(c.Param("id"))
 
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid review ID"})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid review ID"})
+		return
+	}
 
-    userId := c.MustGet("userId").(int)
+	userId := c.MustGet("userId").(int)
 	ref, err := h.store.GetReviewKeysAndRating(reviewId)
 
 	if err != nil {
@@ -207,8 +207,8 @@ func (h *Handler) deleteReview(c *gin.Context) {
 	)
 
 	if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
-        c.JSON(http.StatusNoContent, nil)
-    }
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }

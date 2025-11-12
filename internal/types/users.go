@@ -36,11 +36,11 @@ type ResetPasswordPayload struct {
 }
 
 type Credentials struct {
-	Id       int 
+	Id       int
 	Password string
 }
 
 type ResetTokenData struct {
-    UserId     int
+	UserId     int
 	Expiration time.Time
 }

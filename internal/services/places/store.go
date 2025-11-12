@@ -18,7 +18,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) GetMapMarkers(box types.Bounds) ([]types.Marker, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -67,7 +67,7 @@ func (s *Store) GetMapMarkers(box types.Bounds) ([]types.Marker, error) {
 }
 
 func (s *Store) SearchForPlaces(term string, lat, lng float64) ([]types.SearchResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -112,7 +112,7 @@ func (s *Store) SearchForPlaces(term string, lat, lng float64) ([]types.SearchRe
 }
 
 func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Page[types.PlaceMeta], error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -139,14 +139,13 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 		page.Offset,
 	)
 
-
 	if err != nil {
 		return types.Page[types.PlaceMeta]{}, err
 	}
 
 	defer rows.Close()
 	var list []types.PlaceMeta
-	
+
 	for rows.Next() {
 		var meta types.PlaceMeta
 		sum, count := 0, 0
@@ -185,7 +184,7 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 }
 
 func (s *Store) GetMetaForPlace(placeId int) (types.PlaceMeta, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -219,7 +218,7 @@ func (s *Store) GetMetaForPlace(placeId int) (types.PlaceMeta, error) {
 }
 
 func (s *Store) GetInfoForPlace(placeId int) (types.PlaceInfo, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -251,7 +250,7 @@ func (s *Store) GetInfoForPlace(placeId int) (types.PlaceInfo, error) {
 }
 
 func (s *Store) GetImagesForPlace(placeId int) ([]string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -265,7 +264,7 @@ func (s *Store) GetImagesForPlace(placeId int) ([]string, error) {
 
 	if err != nil {
 		return nil, err
-	} 
+	}
 
 	return images, nil
 }

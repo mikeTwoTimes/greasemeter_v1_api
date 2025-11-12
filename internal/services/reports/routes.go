@@ -35,15 +35,15 @@ func (h *Handler) createReport(c *gin.Context) {
 	placeId, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
-        return
-    }
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
+		return
+	}
 
 	reason, err := utility.ParseReport(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		return
 	}
 
 	userId := c.MustGet("userId").(int)

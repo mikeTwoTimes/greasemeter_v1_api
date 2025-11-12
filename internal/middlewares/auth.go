@@ -33,12 +33,12 @@ func Auth(jwtSecret string) gin.HandlerFunc {
 }
 
 func jwtKeyFunc(jwtSecret string) func(token *jwt.Token) (interface{}, error) {
-    return func(token *jwt.Token) (interface{}, error) {
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, jwt.ErrSignatureInvalid
-        }
-        return []byte(jwtSecret), nil
-    }
+	return func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(jwtSecret), nil
+	}
 }
 
 func getClaimsFromHeader(c *gin.Context, jwtSecret string) (jwt.MapClaims, error) {

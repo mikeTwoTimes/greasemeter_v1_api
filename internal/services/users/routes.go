@@ -40,7 +40,7 @@ func (h *Handler) RegisterRoutes(v1, auth *gin.RouterGroup) {
 // @Accept      json
 // @Produce     json
 // @Param       user body types.RegisterPayload true "User"
-// @Success	    204	
+// @Success	    204
 // @Router      /v1/users/register [post]
 func (h *Handler) createUser(c *gin.Context) {
 	req, err := utility.ParseRegister(c)
@@ -49,7 +49,7 @@ func (h *Handler) createUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(req.Password),
 		bcrypt.DefaultCost,
@@ -143,7 +143,7 @@ func (h *Handler) forgotPassword(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	} 
+	}
 
 	userId, err := h.store.GetUserFromEmail(email)
 
@@ -185,8 +185,8 @@ func (h *Handler) resetPassword(c *gin.Context) {
 	} else if data.UserId == 0 || data.Expiration.Before(time.Now()) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
-	} 
-	
+	}
+
 	password, err := utility.ParseResetPassword(c)
 
 	if err != nil {
@@ -228,7 +228,7 @@ func (h *Handler) deleteUser(c *gin.Context) {
 
 	if err := h.store.DeleteUser(userId); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
-        c.JSON(http.StatusNoContent, nil)
-    }
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }

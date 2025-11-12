@@ -10,7 +10,7 @@ import (
 )
 
 type Client struct {
-    Bucket   *rate.Limiter
+	Bucket   *rate.Limiter
 	LastSeen time.Time
 }
 
@@ -55,7 +55,7 @@ func (l *Limiter) Allow(ip string) bool {
 
 	if !exists {
 		limiter := rate.NewLimiter(
-			rate.Every(l.frame / time.Duration(l.maxRequests)),
+			rate.Every(l.frame/time.Duration(l.maxRequests)),
 			l.maxRequests,
 		)
 
@@ -78,7 +78,7 @@ func (l *Limiter) cleanupClients() {
 		l.Lock()
 
 		for ip, v := range l.clients {
-			if time.Since(v.LastSeen) > 3 * time.Minute {
+			if time.Since(v.LastSeen) > 3*time.Minute {
 				delete(l.clients, ip)
 			}
 		}

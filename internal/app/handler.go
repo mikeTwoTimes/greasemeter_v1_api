@@ -22,8 +22,8 @@ func (a *App) handler() http.Handler {
 	g := gin.Default()
 
 	config := cors.Config{
-		AllowOrigins:     []string{"https://www.greasemeter.live"},
-		AllowMethods:     []string{
+		AllowOrigins: []string{"https://www.greasemeter.live"},
+		AllowMethods: []string{
 			"GET",
 			"POST",
 			"PUT",
@@ -32,7 +32,7 @@ func (a *App) handler() http.Handler {
 			"HEAD",
 			"OPTIONS",
 		},
-		AllowHeaders:     []string{
+		AllowHeaders: []string{
 			"Origin",
 			"Content-Length",
 			"Content-Type",
@@ -41,7 +41,7 @@ func (a *App) handler() http.Handler {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}
-	
+
 	g.Use(cors.New(config))
 
 	v1 := g.Group("/v1")
@@ -86,6 +86,6 @@ func (a *App) handler() http.Handler {
 			ginSwagger.URL("https://api.greasemeter.live/swagger/doc.json"),
 		)(c)
 	})
-	
+
 	return g
 }

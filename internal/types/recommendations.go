@@ -5,6 +5,6 @@ type RecommendationStore interface {
 }
 
 type RecommendationPayload struct {
-	Name string    `json:"name"`
+	Name    string `json:"name"`
 	Address string `json:"address"`
 }

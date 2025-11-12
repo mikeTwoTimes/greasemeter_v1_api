@@ -18,20 +18,20 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) CreateBookmark(userId, placeId int) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	query := `
         INSERT INTO bookmarks (user_id, place_id)
         VALUES ($1, $2)
     `
-    _, err := s.db.Exec(ctx, query, userId, placeId)
+	_, err := s.db.Exec(ctx, query, userId, placeId)
 
-    return err
+	return err
 }
 
 func (s *Store) GetUserFromBookmark(bookmarkId int) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -55,8 +55,8 @@ func (s *Store) GetUserFromBookmark(bookmarkId int) (int, error) {
 }
 
 func (s *Store) GetBookmarksForUser(userId int) ([]types.Bookmark, error) {
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	query := `
         SELECT
@@ -70,41 +70,41 @@ func (s *Store) GetBookmarksForUser(userId int) ([]types.Bookmark, error) {
         ORDER BY b.id
     `
 
-    rows, err := s.db.Query(ctx, query, userId)
+	rows, err := s.db.Query(ctx, query, userId)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    defer rows.Close()
-    var bookmarks []types.Bookmark
+	defer rows.Close()
+	var bookmarks []types.Bookmark
 
-    for rows.Next() {
-        var bookmark types.Bookmark
-        err = rows.Scan(
+	for rows.Next() {
+		var bookmark types.Bookmark
+		err = rows.Scan(
 			&bookmark.Id,
 			&bookmark.PlaceId,
 			&bookmark.Name,
 			&bookmark.Address,
 		)
 
-        if err != nil {
-            return nil, err
-        }
+		if err != nil {
+			return nil, err
+		}
 
-        bookmarks = append(bookmarks, bookmark)
-    }
+		bookmarks = append(bookmarks, bookmark)
+	}
 
-    if err = rows.Err(); err != nil {
-        return nil, err
-    }
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 
-    return bookmarks, nil
+	return bookmarks, nil
 }
 
 func (s *Store) IsPlaceBookmarked(userId, placeId int) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	query := `
         SELECT EXISTS(
@@ -117,12 +117,12 @@ func (s *Store) IsPlaceBookmarked(userId, placeId int) (bool, error) {
 	var exists bool
 	err := s.db.QueryRow(ctx, query, userId, placeId).Scan(&exists)
 
-    return exists, err
+	return exists, err
 }
 
 func (s *Store) DeleteBookmark(bookmarkId int) error {
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	query := `
         DELETE FROM bookmarks
@@ -131,5 +131,5 @@ func (s *Store) DeleteBookmark(bookmarkId int) error {
 
 	_, err := s.db.Exec(ctx, query, bookmarkId)
 
-    return err
+	return err
 }

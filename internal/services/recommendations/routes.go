@@ -33,9 +33,9 @@ func (h *Handler) createRecommendation(c *gin.Context) {
 	req, err := utility.ParseRecommendation(c)
 
 	if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	userId := c.MustGet("userId").(int)
 

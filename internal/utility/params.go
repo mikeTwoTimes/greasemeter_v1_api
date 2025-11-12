@@ -17,13 +17,13 @@ func ParsePagination(c *gin.Context) (types.Pagination, error) {
 	page, err := strconv.Atoi(c.Query("page"))
 
 	if err != nil || page <= 0 {
-        return types.Pagination{}, errors.New("Invalid page")
+		return types.Pagination{}, errors.New("Invalid page")
 	}
 
 	limit, err := strconv.Atoi(c.Query("limit"))
 
 	if err != nil || limit <= 0 || limit > 20 {
-        return types.Pagination{}, errors.New("Invalid limit")
+		return types.Pagination{}, errors.New("Invalid limit")
 	}
 
 	return types.Pagination{
@@ -40,7 +40,7 @@ func ParseCoordinates(c *gin.Context) (float64, float64, error) {
 	}
 
 	lng, err := strconv.ParseFloat(c.Query("lng"), 64)
-	
+
 	if err != nil || lng < -180 || lng > 180 {
 		return 0.0, 0.0, errors.New("Invalid longitude")
 	}
@@ -50,28 +50,28 @@ func ParseCoordinates(c *gin.Context) (float64, float64, error) {
 
 func ParseBoundingBox(c *gin.Context) (types.Bounds, error) {
 	lat, lng, err := ParseCoordinates(c)
-	
+
 	if err != nil {
-        return types.Bounds{}, err
+		return types.Bounds{}, err
 	}
 
 	latDelta, err := strconv.ParseFloat(c.Query("latDelta"), 64)
-	
+
 	if err != nil || latDelta <= 0 || latDelta > 0.25 {
 		return types.Bounds{}, errors.New("Invalid latitude delta")
 	}
 
 	lngDelta, err := strconv.ParseFloat(c.Query("lngDelta"), 64)
-	
+
 	if err != nil || lngDelta <= 0 || lngDelta > 0.45 {
 		return types.Bounds{}, errors.New("Invalid longitude delta")
 	}
 
 	return types.Bounds{
-		LatMin: lat - latDelta / 2,
-		LatMax: lat + latDelta / 2,
-		LngMin: lng - lngDelta / 2,
-		LngMax: lng + lngDelta / 2,
+		LatMin: lat - latDelta/2,
+		LatMax: lat + latDelta/2,
+		LngMin: lng - lngDelta/2,
+		LngMax: lng + lngDelta/2,
 	}, nil
 }
 

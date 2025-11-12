@@ -36,7 +36,7 @@ func (h *Handler) RegisterRoutes(v1 *gin.RouterGroup) {
 // @Param       lng query float64 true "Longitude"
 // @Param       latDelta query float64 true "Latitude delta"
 // @Param       lngDelta query float64 true "Longitude delta"
-// @Success	    200 {object} []types.Marker	
+// @Success	    200 {object} []types.Marker
 // @Router      /v1/places/map [get]
 func (h *Handler) getMapMarkers(c *gin.Context) {
 	box, err := utility.ParseBoundingBox(c)
@@ -162,23 +162,23 @@ func (h *Handler) getImagesForPlace(c *gin.Context) {
 }
 
 func getPlaceData[T any](c *gin.Context, fetch func(int) (T, error)) {
-    placeId, err := strconv.Atoi(c.Param("id"))
+	placeId, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
-        return
-    }
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
+		return
+	}
 
-    data, err := fetch(placeId)
+	data, err := fetch(placeId)
 
 	if err == pgx.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Place not found"})
 		return
 	}
-	
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
 		c.JSON(http.StatusOK, data)
 	}
 }

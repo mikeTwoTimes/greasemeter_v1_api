@@ -34,20 +34,20 @@ func (h *Handler) RegisterRoutes(auth *gin.RouterGroup) {
 // @Router      /v1/bookmarks/places/{id} [post]
 // @Security    BearerAuth
 func (h *Handler) createBookmark(c *gin.Context) {
-    placeId, err := strconv.Atoi(c.Param("id"))
+	placeId, err := strconv.Atoi(c.Param("id"))
 
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid place ID"})
+		return
+	}
 
-    userId := c.MustGet("userId").(int)
+	userId := c.MustGet("userId").(int)
 
 	if err = h.store.CreateBookmark(userId, placeId); err != nil {
-        c.JSON(utility.MapError(err))
-    } else {
-        c.JSON(http.StatusNoContent, nil)
-    }
+		c.JSON(utility.MapError(err))
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }
 
 // @Summary	    Gets user's bookmarks
@@ -59,12 +59,12 @@ func (h *Handler) createBookmark(c *gin.Context) {
 // @Router      /v1/bookmarks [get]
 // @Security    BearerAuth
 func (h *Handler) getBookmarksForUser(c *gin.Context) {
-    userId := c.MustGet("userId").(int)
-    resp, err := h.store.GetBookmarksForUser(userId)
+	userId := c.MustGet("userId").(int)
+	resp, err := h.store.GetBookmarksForUser(userId)
 
 	if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
 		c.JSON(http.StatusOK, resp)
 	}
 }
@@ -106,11 +106,11 @@ func (h *Handler) isPlaceBookmarked(c *gin.Context) {
 // @Router      /v1/bookmarks/{id} [delete]
 // @Security    BearerAuth
 func (h *Handler) deleteBookmark(c *gin.Context) {
-    bookmarkId, err := strconv.Atoi(c.Param("id"))
+	bookmarkId, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid bookmark ID"})
-        return
+		return
 	}
 
 	userId := c.MustGet("userId").(int)
@@ -125,8 +125,8 @@ func (h *Handler) deleteBookmark(c *gin.Context) {
 			"error": "You are not authorized to delete this bookmark",
 		})
 	} else if err = h.store.DeleteBookmark(bookmarkId); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-    } else {
-        c.JSON(http.StatusNoContent, nil)
-    }
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }

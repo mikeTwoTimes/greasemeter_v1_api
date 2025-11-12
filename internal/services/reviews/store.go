@@ -18,7 +18,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 }
 
 func (s *Store) CreateReview(data types.ReviewPayload, placeId, userId int) (types.Timestamp, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	tx, err := s.db.Begin(ctx)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func (s *Store) CreateReview(data types.ReviewPayload, placeId, userId int) (typ
         VALUES ($1, $2, $3, $4)
         RETURNING id, date
     `
-	
+
 	var timestamp types.Timestamp
 	err = tx.QueryRow(
 		ctx,
@@ -54,7 +54,7 @@ func (s *Store) CreateReview(data types.ReviewPayload, placeId, userId int) (typ
             rating_sum = rating_sum + $1
         WHERE id = $2
     `
-	
+
 	_, err = tx.Exec(ctx, updateRatingQuery, data.Rating, placeId)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *Store) CreateReview(data types.ReviewPayload, placeId, userId int) (typ
 }
 
 func (s *Store) GetReviews(query string, foreignId int, page types.Pagination) (types.Page[types.Review], error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	rows, err := s.db.Query(ctx, query, foreignId, page.Limit, page.Offset)
@@ -112,7 +112,7 @@ func (s *Store) GetReviews(query string, foreignId int, page types.Pagination) (
 }
 
 func (s *Store) GetReviewKeysAndRating(reviewId int) (types.ReviewRef, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := `
@@ -156,8 +156,8 @@ func (s *Store) GetReviewsForPlace(placeId int, page types.Pagination) (types.Pa
         ORDER BY r.date DESC, r.id DESC
         LIMIT $2 + 1 OFFSET ($3 - 1) * $2
     `
-	
-	 return s.GetReviews(query, placeId, page)
+
+	return s.GetReviews(query, placeId, page)
 }
 
 func (s *Store) GetReviewsForUser(userId int, page types.Pagination) (types.Page[types.Review], error) {
@@ -174,12 +174,12 @@ func (s *Store) GetReviewsForUser(userId int, page types.Pagination) (types.Page
         ORDER BY r.date DESC, r.id DESC
         LIMIT $2 + 1 OFFSET ($3 - 1) * $2
     `
-	
+
 	return s.GetReviews(query, userId, page)
 }
 
 func (s *Store) UpdateReview(data types.ReviewPayload, reviewId, placeId, diff int) (types.Timestamp, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	tx, err := s.db.Begin(ctx)
 	defer cancel()
 
@@ -196,7 +196,7 @@ func (s *Store) UpdateReview(data types.ReviewPayload, reviewId, placeId, diff i
         WHERE id = $3
         RETURNING date
     `
-	
+
 	var timestamp types.Timestamp
 	err = tx.QueryRow(
 		ctx,
@@ -228,7 +228,7 @@ func (s *Store) UpdateReview(data types.ReviewPayload, reviewId, placeId, diff i
 }
 
 func (s *Store) DeleteReview(reviewId, placeId, rating int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	tx, err := s.db.Begin(ctx)
 	defer cancel()
 
