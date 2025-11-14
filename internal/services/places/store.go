@@ -111,7 +111,7 @@ func (s *Store) SearchForPlaces(term string, lat, lng float64) ([]types.SearchRe
 	return searchResults, nil
 }
 
-func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Page[types.PlaceMeta], error) {
+func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Page[types.Listing], error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -140,50 +140,50 @@ func (s *Store) GetPlacesList(box types.Bounds, page types.Pagination) (types.Pa
 	)
 
 	if err != nil {
-		return types.Page[types.PlaceMeta]{}, err
+		return types.Page[types.Listing]{}, err
 	}
 
 	defer rows.Close()
-	var list []types.PlaceMeta
+	var list []types.Listing
 
 	for rows.Next() {
-		var meta types.PlaceMeta
+		var place types.Listing
 		sum, count := 0, 0
 		err = rows.Scan(
-			&meta.Id,
-			&meta.Name,
-			&meta.Address,
+			&place.Id,
+			&place.Name,
+			&place.Address,
 			&sum,
 			&count,
 		)
 
 		if err != nil {
-			return types.Page[types.PlaceMeta]{}, err
+			return types.Page[types.Listing]{}, err
 		} else if count == 0 {
-			meta.Rating = 0
+			place.Rating = 0
 		} else {
-			meta.Rating = float32(sum) / float32(count)
+			place.Rating = float32(sum) / float32(count)
 		}
 
-		list = append(list, meta)
+		list = append(list, place)
 	}
 
 	if err = rows.Err(); err != nil {
-		return types.Page[types.PlaceMeta]{}, err
+		return types.Page[types.Listing]{}, err
 	} else if len(list) <= page.Limit {
-		return types.Page[types.PlaceMeta]{
+		return types.Page[types.Listing]{
 			Data: list,
 			More: false,
 		}, nil
 	}
 
-	return types.Page[types.PlaceMeta]{
+	return types.Page[types.Listing]{
 		Data: list[:page.Limit],
 		More: true,
 	}, nil
 }
 
-func (s *Store) GetMetaForPlace(placeId int) (types.PlaceMeta, error) {
+func (s *Store) GetMarkerDetails(placeId int) (types.MarkerDetails, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -192,21 +192,88 @@ func (s *Store) GetMetaForPlace(placeId int) (types.PlaceMeta, error) {
             name,
             address,
             rating_sum,
-            rating_count
+            rating_count,
+            image_url
+        FROM places
+        WHERE id = $1
+    `
+
+	var details types.MarkerDetails
+	sum, count := 0, 0
+	err := s.db.QueryRow(ctx, query, placeId).Scan(
+		&details.Name,
+		&details.Address,
+		&sum,
+		&count,
+		&details.Images,
+	)
+
+	if err != nil {
+		return types.MarkerDetails{}, err
+	} else if count == 0 {
+		details.Rating = 0
+	} else {
+		details.Rating = float32(sum) / float32(count)
+	}
+
+	return details, nil
+}
+
+func (s *Store) GetListingDetails(placeId int) (types.ListingDetails, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+        SELECT
+            ST_AsGeoJSON(point),
+            image_url
+        FROM places
+        WHERE id = $1
+    `
+
+	var details types.ListingDetails
+	geojson := ""
+	err := s.db.QueryRow(ctx, query, placeId).Scan(
+		&geojson,
+		&details.Images,
+	)
+
+	if err != nil {
+		return types.ListingDetails{}, err
+	} else if json.Unmarshal([]byte(geojson), &details.Point) != nil {
+		return types.ListingDetails{}, err
+	}
+
+	return details, nil
+}
+
+func (s *Store) GetPlaceMeta(placeId int) (types.PlaceMeta, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+        SELECT
+            ST_AsGeoJSON(point),
+            rating_sum,
+            rating_count,
+            image_url
         FROM places
         WHERE id = $1
     `
 
 	var meta types.PlaceMeta
+	geojson := ""
 	sum, count := 0, 0
 	err := s.db.QueryRow(ctx, query, placeId).Scan(
-		&meta.Name,
-		&meta.Address,
+		&geojson,
 		&sum,
 		&count,
+		&meta.Images,
 	)
 
 	if err != nil {
+		return types.PlaceMeta{}, err
+	} else if json.Unmarshal([]byte(geojson), &meta.Point) != nil {
 		return types.PlaceMeta{}, err
 	} else if count == 0 {
 		meta.Rating = 0
@@ -215,56 +282,4 @@ func (s *Store) GetMetaForPlace(placeId int) (types.PlaceMeta, error) {
 	}
 
 	return meta, nil
-}
-
-func (s *Store) GetInfoForPlace(placeId int) (types.PlaceInfo, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	query := `
-        SELECT
-            rating_sum,
-            rating_count,
-            image_url
-        FROM places
-        WHERE id = $1
-    `
-
-	var info types.PlaceInfo
-	sum, count := 0, 0
-	err := s.db.QueryRow(ctx, query, placeId).Scan(
-		&sum,
-		&count,
-		&info.Images,
-	)
-
-	if err != nil {
-		return types.PlaceInfo{}, err
-	} else if count == 0 {
-		info.Rating = 0
-	} else {
-		info.Rating = float32(sum) / float32(count)
-	}
-
-	return info, nil
-}
-
-func (s *Store) GetImagesForPlace(placeId int) ([]string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	query := `
-        SELECT image_url
-        FROM places
-        WHERE id = $1
-    `
-
-	var images []string
-	err := s.db.QueryRow(ctx, query, placeId).Scan(&images)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return images, nil
 }

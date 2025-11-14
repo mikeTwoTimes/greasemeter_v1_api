@@ -214,7 +214,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.MetaPage"
+                            "$ref": "#/definitions/types.ListingPage"
                         }
                     }
                 }
@@ -331,9 +331,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/places/{id}/images": {
+        "/v1/places/{id}/list": {
             "get": {
-                "description": "Gets images for a place given a valid place ID",
+                "description": "Gets place data for a place listing given a valid place ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -343,7 +343,7 @@ const docTemplate = `{
                 "tags": [
                     "places"
                 ],
-                "summary": "Gets images for a place",
+                "summary": "Gets remaining place data for a place listing",
                 "parameters": [
                     {
                         "type": "integer",
@@ -357,18 +357,15 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/types.ListingDetails"
                         }
                     }
                 }
             }
         },
-        "/v1/places/{id}/info": {
+        "/v1/places/{id}/map": {
             "get": {
-                "description": "Gets info for a place given a valid place ID",
+                "description": "Gets place data for a map marker given a valid place ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -378,7 +375,7 @@ const docTemplate = `{
                 "tags": [
                     "places"
                 ],
-                "summary": "Gets info for a place",
+                "summary": "Gets remaining place data for a map marker",
                 "parameters": [
                     {
                         "type": "integer",
@@ -392,7 +389,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.PlaceInfo"
+                            "$ref": "#/definitions/types.MarkerDetails"
                         }
                     }
                 }
@@ -400,7 +397,7 @@ const docTemplate = `{
         },
         "/v1/places/{id}/meta": {
             "get": {
-                "description": "Gets metadata for a place given a valid place ID",
+                "description": "Gets metadata for a search result or bookmark",
                 "consumes": [
                     "application/json"
                 ],
@@ -410,7 +407,7 @@ const docTemplate = `{
                 "tags": [
                     "places"
                 ],
-                "summary": "Gets metadata for a place",
+                "summary": "Gets remaining metadata for a place",
                 "parameters": [
                     {
                         "type": "integer",
@@ -882,6 +879,51 @@ const docTemplate = `{
                 }
             }
         },
+        "types.Listing": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.ListingDetails": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "point": {
+                    "$ref": "#/definitions/types.GeoJSONPoint"
+                }
+            }
+        },
+        "types.ListingPage": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.Listing"
+                    }
+                },
+                "more": {
+                    "type": "boolean"
+                }
+            }
+        },
         "types.Login": {
             "type": "object",
             "properties": {
@@ -912,28 +954,20 @@ const docTemplate = `{
                 }
             }
         },
-        "types.MetaPage": {
+        "types.MarkerDetails": {
             "type": "object",
             "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.PlaceMeta"
-                    }
+                "address": {
+                    "type": "string"
                 },
-                "more": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "types.PlaceInfo": {
-            "type": "object",
-            "properties": {
                 "images": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "name": {
+                    "type": "string"
                 },
                 "rating": {
                     "type": "number"
@@ -943,14 +977,14 @@ const docTemplate = `{
         "types.PlaceMeta": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
+                "point": {
+                    "$ref": "#/definitions/types.GeoJSONPoint"
                 },
                 "rating": {
                     "type": "number"

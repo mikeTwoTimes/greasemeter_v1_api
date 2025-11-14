@@ -20,11 +20,11 @@ func NewHandler(store types.PlaceStore) *Handler {
 
 func (h *Handler) RegisterRoutes(v1 *gin.RouterGroup) {
 	v1.GET("/places/map", h.getMapMarkers)
-	v1.GET("/places/search", h.searchForPlaces)
 	v1.GET("/places/list", h.getPlacesList)
+	v1.GET("/places/search", h.searchForPlaces)
+	v1.GET("/places/:id/map", h.getDetailsForMarker)
+	v1.GET("/places/:id/list", h.getDetailsForListing)
 	v1.GET("/places/:id/meta", h.getMetaForPlace)
-	v1.GET("/places/:id/info", h.getInfoForPlace)
-	v1.GET("/places/:id/images", h.getImagesForPlace)
 }
 
 // @Summary	    Gets all map markers
@@ -99,7 +99,7 @@ func (h *Handler) searchForPlaces(c *gin.Context) {
 // @Param       lngDelta query float64 true "Longitude delta"
 // @Param       page query int true "Page number"
 // @Param       limit query int true "Page length"
-// @Success	    200 {object} types.MetaPage
+// @Success	    200 {object} types.ListingPage
 // @Router      /v1/places/list [get]
 func (h *Handler) getPlacesList(c *gin.Context) {
 	box, err := utility.ParseBoundingBox(c)
@@ -125,8 +125,32 @@ func (h *Handler) getPlacesList(c *gin.Context) {
 	}
 }
 
-// @Summary	    Gets metadata for a place
-// @Description	Gets metadata for a place given a valid place ID
+// @Summary	    Gets remaining place data for a map marker
+// @Description	Gets place data for a map marker given a valid place ID
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {object} types.MarkerDetails
+// @Router      /v1/places/{id}/map [get]
+func (h *Handler) getDetailsForMarker(c *gin.Context) {
+	getPlaceData(c, h.store.GetMarkerDetails)
+}
+
+// @Summary	    Gets remaining place data for a place listing
+// @Description	Gets place data for a place listing given a valid place ID
+// @Tags        places
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "Place ID"
+// @Success	    200 {object} types.ListingDetails
+// @Router      /v1/places/{id}/list [get]
+func (h *Handler) getDetailsForListing(c *gin.Context) {
+	getPlaceData(c, h.store.GetListingDetails)
+}
+
+// @Summary	    Gets remaining metadata for a place
+// @Description	Gets metadata for a search result or bookmark
 // @Tags        places
 // @Accept      json
 // @Produce     json
@@ -134,31 +158,7 @@ func (h *Handler) getPlacesList(c *gin.Context) {
 // @Success	    200 {object} types.PlaceMeta
 // @Router      /v1/places/{id}/meta [get]
 func (h *Handler) getMetaForPlace(c *gin.Context) {
-	getPlaceData(c, h.store.GetMetaForPlace)
-}
-
-// @Summary	    Gets info for a place
-// @Description	Gets info for a place given a valid place ID
-// @Tags        places
-// @Accept      json
-// @Produce     json
-// @Param       id path int true "Place ID"
-// @Success	    200 {object} types.PlaceInfo
-// @Router      /v1/places/{id}/info [get]
-func (h *Handler) getInfoForPlace(c *gin.Context) {
-	getPlaceData(c, h.store.GetInfoForPlace)
-}
-
-// @Summary	    Gets images for a place
-// @Description	Gets images for a place given a valid place ID
-// @Tags        places
-// @Accept      json
-// @Produce     json
-// @Param       id path int true "Place ID"
-// @Success	    200 {array} string
-// @Router      /v1/places/{id}/images [get]
-func (h *Handler) getImagesForPlace(c *gin.Context) {
-	getPlaceData(c, h.store.GetImagesForPlace)
+	getPlaceData(c, h.store.GetPlaceMeta)
 }
 
 func getPlaceData[T any](c *gin.Context, fetch func(int) (T, error)) {

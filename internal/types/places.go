@@ -3,10 +3,10 @@ package types
 type PlaceStore interface {
 	GetMapMarkers(box Bounds) ([]Marker, error)
 	SearchForPlaces(term string, lat, lng float64) ([]SearchResult, error)
-	GetPlacesList(box Bounds, page Pagination) (Page[PlaceMeta], error)
-	GetMetaForPlace(placeId int) (PlaceMeta, error)
-	GetInfoForPlace(placeId int) (PlaceInfo, error)
-	GetImagesForPlace(placeId int) ([]string, error)
+	GetPlacesList(box Bounds, page Pagination) (Page[Listing], error)
+	GetMarkerDetails(placeId int) (MarkerDetails, error)
+	GetListingDetails(placeId int) (ListingDetails, error)
+	GetPlaceMeta(placeId int) (PlaceMeta, error)
 }
 
 type GeoJSONPoint struct {
@@ -19,6 +19,25 @@ type Marker struct {
 	Point GeoJSONPoint `json:"point"`
 }
 
+type MarkerDetails struct {
+	Name    string   `json:"name"`
+	Address string   `json:"address"`
+	Rating  float32  `json:"rating"`
+	Images  []string `json:"images"`
+}
+
+type Listing struct {
+	Id      int     `json:"id"`
+	Name    string  `json:"name"`
+	Address string  `json:"address"`
+	Rating  float32 `json:"rating"`
+}
+
+type ListingDetails struct {
+	Point  GeoJSONPoint `json:"point"`
+	Images []string     `json:"images"`
+}
+
 type SearchResult struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`
@@ -26,15 +45,9 @@ type SearchResult struct {
 }
 
 type PlaceMeta struct {
-	Id      int     `json:"id,omitempty"`
-	Name    string  `json:"name"`
-	Address string  `json:"address"`
-	Rating  float32 `json:"rating"`
-}
-
-type PlaceInfo struct {
-	Rating float32  `json:"rating"`
-	Images []string `json:"images"`
+	Point  GeoJSONPoint `json:"point"`
+	Rating float32      `json:"rating"`
+	Images []string     `json:"images"`
 }
 
 type Bounds struct {
@@ -44,7 +57,7 @@ type Bounds struct {
 	LngMax float64
 }
 
-type MetaPage struct {
-	Data []PlaceMeta `json:"data"`
-	More bool        `json:"more"`
+type ListingPage struct {
+	Data []Listing `json:"data"`
+	More bool      `json:"more"`
 }

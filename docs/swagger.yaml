@@ -24,6 +24,35 @@ definitions:
       type:
         type: string
     type: object
+  types.Listing:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rating:
+        type: number
+    type: object
+  types.ListingDetails:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+      point:
+        $ref: '#/definitions/types.GeoJSONPoint'
+    type: object
+  types.ListingPage:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.Listing'
+        type: array
+      more:
+        type: boolean
+    type: object
   types.Login:
     properties:
       token:
@@ -43,32 +72,27 @@ definitions:
       point:
         $ref: '#/definitions/types.GeoJSONPoint'
     type: object
-  types.MetaPage:
+  types.MarkerDetails:
     properties:
-      data:
-        items:
-          $ref: '#/definitions/types.PlaceMeta'
-        type: array
-      more:
-        type: boolean
-    type: object
-  types.PlaceInfo:
-    properties:
+      address:
+        type: string
       images:
         items:
           type: string
         type: array
+      name:
+        type: string
       rating:
         type: number
     type: object
   types.PlaceMeta:
     properties:
-      address:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
+      images:
+        items:
+          type: string
+        type: array
+      point:
+        $ref: '#/definitions/types.GeoJSONPoint'
       rating:
         type: number
     type: object
@@ -227,11 +251,11 @@ paths:
       summary: Creates a bookmark for a place
       tags:
       - bookmarks
-  /v1/places/{id}/images:
+  /v1/places/{id}/list:
     get:
       consumes:
       - application/json
-      description: Gets images for a place given a valid place ID
+      description: Gets place data for a place listing given a valid place ID
       parameters:
       - description: Place ID
         in: path
@@ -244,17 +268,15 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              type: string
-            type: array
-      summary: Gets images for a place
+            $ref: '#/definitions/types.ListingDetails'
+      summary: Gets remaining place data for a place listing
       tags:
       - places
-  /v1/places/{id}/info:
+  /v1/places/{id}/map:
     get:
       consumes:
       - application/json
-      description: Gets info for a place given a valid place ID
+      description: Gets place data for a map marker given a valid place ID
       parameters:
       - description: Place ID
         in: path
@@ -267,15 +289,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.PlaceInfo'
-      summary: Gets info for a place
+            $ref: '#/definitions/types.MarkerDetails'
+      summary: Gets remaining place data for a map marker
       tags:
       - places
   /v1/places/{id}/meta:
     get:
       consumes:
       - application/json
-      description: Gets metadata for a place given a valid place ID
+      description: Gets metadata for a search result or bookmark
       parameters:
       - description: Place ID
         in: path
@@ -289,7 +311,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.PlaceMeta'
-      summary: Gets metadata for a place
+      summary: Gets remaining metadata for a place
       tags:
       - places
   /v1/places/list:
@@ -338,7 +360,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.MetaPage'
+            $ref: '#/definitions/types.ListingPage'
       summary: Gets list of places
       tags:
       - places
