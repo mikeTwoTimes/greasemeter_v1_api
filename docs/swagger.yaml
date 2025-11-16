@@ -117,6 +117,11 @@ definitions:
       reason:
         type: string
     type: object
+  types.ResetPasswordPayload:
+    properties:
+      password:
+        type: string
+    type: object
   types.Review:
     properties:
       id:
@@ -693,6 +698,12 @@ paths:
         name: token
         required: true
         type: string
+      - description: Password
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/types.ResetPasswordPayload'
       produces:
       - application/json
       responses:

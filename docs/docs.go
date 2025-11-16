@@ -829,6 +829,15 @@ const docTemplate = `{
                         "name": "token",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Password",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ResetPasswordPayload"
+                        }
                     }
                 ],
                 "responses": {
@@ -1020,6 +1029,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ResetPasswordPayload": {
+            "type": "object",
+            "properties": {
+                "password": {
                     "type": "string"
                 }
             }

@@ -174,6 +174,7 @@ func (h *Handler) forgotPassword(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       token path string true "Reset token"
+// @Param       password body types.ResetPasswordPayload true "Password"
 // @Success	    204
 // @Router      /v1/users/reset-password/{token} [post]
 func (h *Handler) resetPassword(c *gin.Context) {
