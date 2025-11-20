@@ -64,6 +64,8 @@ func (h *Handler) createReview(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id path int true "Place ID"
+// @Param       page query int true "Page number"
+// @Param       limit query int true "Page length"
 // @Success	    200 {object} types.ReviewPage
 // @Router      /v1/reviews/places/{id} [get]
 func (h *Handler) getReviewsForPlace(c *gin.Context) {
@@ -94,6 +96,8 @@ func (h *Handler) getReviewsForPlace(c *gin.Context) {
 // @Tags        reviews
 // @Accept      json
 // @Produce     json
+// @Param       page query int true "Page number"
+// @Param       limit query int true "Page length"
 // @Success	    200 {object} types.ReviewPage
 // @Router      /v1/reviews [get]
 // @Security    BearerAuth
