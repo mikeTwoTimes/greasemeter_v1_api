@@ -55,9 +55,18 @@ go test ./tests -env local -v
 
 from the project root. This will run a script that automates http requests to 
 the server and determines whether or not they were successful by their response
-codes. Please note that running more than one test in the span of a minute will
+codes. 
+
+Please note that running more than one test in the span of a minute will
 cause the server's rate limiter to kick in, resulting in a heap of 429 response
-codes.
+codes. Also, if your port environment variable is not 8080, you will need to
+change line 18 in ./tests/api_test.go to match that value.
+
+You can also test our production api by omitting the local flag!
+
+```
+go test ./tests -v
+```
 
 ## Documentation
 
