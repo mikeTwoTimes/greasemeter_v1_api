@@ -5,6 +5,7 @@ A Monolithic REST API written in Go using the Gin web framework.
 ## Dependencies
 
 - go1.24.9 or higher
+- PostgreSQL 17 or higher
 
 ## Installation
 
@@ -18,14 +19,22 @@ root with the following values.
 
 ```
 PORT=8080
-JWT_SECRET=
-DB_CONN=
-SENDGRID_KEY=
+JWT_SECRET=21429e89cc5fdea19d3d3d1073e3590a6d6c85c065c639eee29afe5d88d46b54
+DB_CONN=postgresql://username:password@localhost:5432/grease_db
 ```
 
-The server will run just fine with those values. Obviously any operation 
-requiring a server secret, database connection, or sendgrid key will fail if 
-it's field is left blank.
+The server may run now, but it can't really do anything without a database 
+connection. Run these commands from the project root to quickly set up a mock 
+database.
+
+```
+createdb grease_db
+psql grease_db < migrations/init.sql
+psql grease_db < migrations/seed.sql
+```
+
+And be sure to update the username and password in the database connection 
+environment variable!
 
 ## Running
 
@@ -38,16 +47,16 @@ packages. Subsequent runs will not require this step.
 
 ## Testing
 
-To test our hosted API, you can run
+Now that the server is up and running we can test it's functionality by running
 
 ```
-go test -v -count=1 ./tests
+go test ./tests -env local -v
 ```
 
-from the project root. This will run a script that automatically tests our 
-endpoints by comparing expected status codes to the ones received. Make note 
-that running this script back to back within the span of a minute will cause 
-the servers rate limiter to kick in, which will result in a heap of 429 status 
+from the project root. This will run a script that automates http requests to 
+the server and determines whether or not they were successful by their response
+codes. Please note that running more than one test in the span of a minute will
+cause the server's rate limiter to kick in, resulting in a heap of 429 response
 codes.
 
 ## Documentation
