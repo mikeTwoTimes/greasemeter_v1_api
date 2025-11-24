@@ -2,12 +2,15 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.18 (Homebrew)
--- Dumped by pg_dump version 14.18 (Homebrew)
+\restrict GnhogwjFgZVVsUgyRsQIfhZMf0jmKcqFsbXEnpMsDW0eJq2lA5T7A9CHiONZGLH
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -42,6 +45,62 @@ CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
+
+
+--
+-- Name: cleanup_expired_tokens(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.cleanup_expired_tokens() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    DELETE FROM reset_tokens
+    WHERE expires_at < NOW();
+END;
+$$;
+
+
+--
+-- Name: limit_bookmarks_per_user(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.limit_bookmarks_per_user() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (
+        SELECT COUNT(*) 
+        FROM bookmarks 
+        WHERE user_id = NEW.user_id
+    ) >= 20 THEN
+        RAISE EXCEPTION 'Maximum number of bookmarks has been reached.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: limit_recommendations_per_user(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.limit_recommendations_per_user() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (
+        SELECT COUNT(*) 
+        FROM recommendations 
+        WHERE user_id = NEW.user_id
+    ) >= 20 THEN
+        RAISE EXCEPTION 'Maximum number of recommendations has been reached.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
 
 
 SET default_tablespace = '';
@@ -90,7 +149,8 @@ CREATE TABLE public.places (
     point public.geometry(Point,4326) NOT NULL,
     rating_sum integer DEFAULT 0,
     rating_count integer DEFAULT 0,
-    image_url character varying(255)[] NOT NULL
+    image_url text[],
+    api_id text
 );
 
 
@@ -183,7 +243,7 @@ ALTER SEQUENCE public.reports_id_seq OWNED BY public.reports.id;
 --
 
 CREATE TABLE public.reset_tokens (
-    token character(32) NOT NULL,
+    token character(35) NOT NULL,
     user_id integer NOT NULL,
     expires_at timestamp with time zone DEFAULT (now() + '00:15:00'::interval) NOT NULL
 );
@@ -199,7 +259,7 @@ CREATE TABLE public.reviews (
     user_id integer NOT NULL,
     rating integer NOT NULL,
     text character varying(200) NOT NULL,
-    date date DEFAULT CURRENT_DATE NOT NULL,
+    date timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT reviews_rating_check CHECK (((rating >= 1) AND (rating <= 5)))
 );
 
@@ -299,6 +359,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
+-- Name: places NameAddress; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.places
+    ADD CONSTRAINT "NameAddress" UNIQUE (name, address);
+
+
+--
 -- Name: bookmarks bookmarks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -312,22 +380,6 @@ ALTER TABLE ONLY public.bookmarks
 
 ALTER TABLE ONLY public.bookmarks
     ADD CONSTRAINT bookmarks_user_id_place_id_key UNIQUE (user_id, place_id);
-
-
---
--- Name: reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reset_tokens
-    ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (token);
-
-
---
--- Name: reset_tokens password_reset_tokens_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reset_tokens
-    ADD CONSTRAINT password_reset_tokens_user_id_key UNIQUE (user_id);
 
 
 --
@@ -368,6 +420,22 @@ ALTER TABLE ONLY public.reports
 
 ALTER TABLE ONLY public.reports
     ADD CONSTRAINT reports_user_id_place_id_key UNIQUE (user_id, place_id);
+
+
+--
+-- Name: reset_tokens reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reset_tokens
+    ADD CONSTRAINT reset_tokens_pkey PRIMARY KEY (token);
+
+
+--
+-- Name: reset_tokens reset_tokens_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reset_tokens
+    ADD CONSTRAINT reset_tokens_user_id_key UNIQUE (user_id);
 
 
 --
@@ -425,6 +493,20 @@ CREATE INDEX idx_places_name_trgm ON public.places USING gin (name public.gin_tr
 
 
 --
+-- Name: bookmarks check_bookmark_limit; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_bookmark_limit BEFORE INSERT ON public.bookmarks FOR EACH ROW EXECUTE FUNCTION public.limit_bookmarks_per_user();
+
+
+--
+-- Name: recommendations check_recommendations_limit; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_recommendations_limit BEFORE INSERT ON public.recommendations FOR EACH ROW EXECUTE FUNCTION public.limit_recommendations_per_user();
+
+
+--
 -- Name: bookmarks bookmarks_place_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -441,14 +523,6 @@ ALTER TABLE ONLY public.bookmarks
 
 
 --
--- Name: reset_tokens fk_user; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.reset_tokens
-    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: recommendations recommendations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -461,7 +535,7 @@ ALTER TABLE ONLY public.recommendations
 --
 
 ALTER TABLE ONLY public.reports
-    ADD CONSTRAINT reports_place_id_fkey FOREIGN KEY (place_id) REFERENCES public.places(id);
+    ADD CONSTRAINT reports_place_id_fkey FOREIGN KEY (place_id) REFERENCES public.places(id) ON DELETE CASCADE;
 
 
 --
@@ -470,6 +544,14 @@ ALTER TABLE ONLY public.reports
 
 ALTER TABLE ONLY public.reports
     ADD CONSTRAINT reports_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: reset_tokens reset_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reset_tokens
+    ADD CONSTRAINT reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -491,4 +573,6 @@ ALTER TABLE ONLY public.reviews
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict GnhogwjFgZVVsUgyRsQIfhZMf0jmKcqFsbXEnpMsDW0eJq2lA5T7A9CHiONZGLH
 
