@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	prodBaseURL  = "https://api.greasemeter.live/v1"
+	prodBaseURL  = ""
 	localBaseURL = "http://localhost:8080/v1"
 )
 

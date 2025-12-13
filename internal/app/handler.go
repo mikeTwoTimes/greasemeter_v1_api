@@ -22,7 +22,7 @@ func (a *App) handler() http.Handler {
 	g := gin.Default()
 
 	config := cors.Config{
-		AllowOrigins: []string{"https://www.greasemeter.live"},
+		AllowOrigins: []string{"*"},
 		AllowMethods: []string{
 			"GET",
 			"POST",
@@ -83,7 +83,7 @@ func (a *App) handler() http.Handler {
 
 		ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
-			ginSwagger.URL("https://api.greasemeter.live/swagger/doc.json"),
+			ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
 		)(c)
 	})
 

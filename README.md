@@ -62,13 +62,7 @@ cause the server's rate limiter to kick in, resulting in a heap of 429 response
 codes. Also, if your port environment variable is not 8080, you will need to
 change line 18 in ./tests/api_test.go to match that value.
 
-You can also test our production api by omitting the local flag!
-
-```
-go test ./tests -v
-```
-
 ## Documentation
 
-The hosted API's documentation can be found 
-[here](https://api.greasemeter.live/swagger/index.html). 
+To see the complete documentation of the API, run the server and go to:
+http://localhost:8080/swagger/index.html

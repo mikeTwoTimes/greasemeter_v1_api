@@ -18,13 +18,13 @@ func NewMailer(client *sendgrid.Client) *Mailer {
 }
 
 func (m *Mailer) SendPasswordReset(token string, email string) (int, gin.H) {
-	from := mail.NewEmail("GreaseMeter", "no-reply@api.greasemeter.live")
+	from := mail.NewEmail("GreaseMeter", "")
 	subject := "Reset Your Password"
 	to := mail.NewEmail("", email)
 
 	resetLink := fmt.Sprintf(
 		"%s/reset-password/%s",
-		"https://www.greasemeter.live/v1/users",
+		"",
 		token,
 	)
 
