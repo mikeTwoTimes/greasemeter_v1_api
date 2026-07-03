@@ -15,7 +15,7 @@ cd greasemeter_v1_api
 ```
 
 Before being able to run the server, you will need a .env file in the project 
-root with the following values.
+root with the following sample values.
 
 ```
 PORT=8080
